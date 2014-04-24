@@ -27,20 +27,10 @@ Compiling and packaging runs incrementally, so this iteration takes about only f
 
 If you use default AVD, try genymotion or other faster virtual device. Deploying apk to the device becomes much faster!
 
-Using Eclipse
--------------
-
-    $ sbt eclipse
-
-Using IntelliJ IDEA
--------------------
-
-    $ sbt gen-idea
-
-Two more steps are needed for IDEA:
+Two more steps are (probably) needed for IDEA:
 
  * Project Structure -> Project -> in Project SDK section, select proper Android SDK
- * Porject Structure -> Modules -> add Android facet to your project module
+ * Project Structure -> Modules -> add Android facet to your project module
 
 We do not recommend to use IDEA's own Android build system, because proguard settings are complicated and not fast.
 Use commands from [android-sdk-plugin for sbt](https://github.com/pfn/android-sdk-plugin).
