@@ -3,20 +3,49 @@ package ua.kpi.teacherjournal
 import org.scaloid.common._
 import android.graphics.Color
 
+case class Student(name: String, marks: Map[String, String])
+object StudentDAO {
+  val group = "IO-25"
+  val students = for (i <- 1 to 50) yield Student(s"Student $i", Map("17.02" -> "3"))
+  val dates = Array("17.02", "24.02", "1.03", "8.03", "15.03", "Lab 1", "Lab 2")
+}
+
 class MainActivity extends SActivity {
 
+  private val headerColor = Color.rgb(0xe7, 0xe7, 0xe7)
+  private val cellColor = Color.WHITE
+  private val borderColor = Color.rgb(0xcc, 0xcc, 0xcc)
+
   onCreate {
+
+    import StudentDAO._
+
     contentView = new SVerticalLayout {
+
       style {
-        case b: SButton => b.textColor(Color.RED).onClick(toast("Bang!"))
-        case t: STextView => t textSize 10.dip
-        case v => v.backgroundColor(Color.YELLOW)
+        case t: STextView => t.textColor(Color.BLACK)
       }
-      STextView("I am 10 dip tall")
-      STextView("Me too")
-      STextView("I am taller than you") textSize 15.dip // overriding
-      SEditText("Yellow input field")
-      SButton(R.string.red)
-    } padding 20.dip
+
+      this += new SScrollView {
+        this += new STableLayout {
+          // Header row
+          this += new STableRow {
+            STextView(group).backgroundColor(headerColor).<<.marginRight(1).marginBottom(1).>>
+            for (date <- dates)
+              STextView(date).backgroundColor(headerColor).<<.marginRight(1).marginBottom(1).>>
+          }
+          // Student rows
+          for (student <- students.zipWithIndex)
+            this += new STableRow {
+              STextView((student._2 + 1) + ". " + student._1.name).backgroundColor(headerColor).<<.
+                marginRight(1).marginBottom(1).>>
+              for (date <- dates)
+                STextView(student._1.marks.getOrElse(date, "")).backgroundColor(cellColor).<<.marginRight(1).
+                  marginBottom(1).>>
+            }
+        }
+      }
+
+    }.backgroundColor(Color.RED)
   }
 }
