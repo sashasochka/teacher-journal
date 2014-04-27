@@ -14,6 +14,13 @@ You can build this project using sbt:
 
 This will compile the project and generate an APK.
 
+If this fails try to remove ~/.sbt and ~/.ivy2 directories
+
+    $ rm -rf ~/.sbt
+    $ rm -rf ~/.ivy2
+
+You'll also possibly need to setup ANDROID_HOME environment variable as a path to your android sdk directory
+
 For more command, refer to [android-sdk-plugin for sbt](https://github.com/pfn/android-sdk-plugin).
 
 Tips for faster development iteration
