@@ -2,13 +2,17 @@ package ua.kpi.teacherjournal
 
 import org.scaloid.common._
 import android.graphics.Color
+import android.widget.ArrayAdapter
+import android.app.ActionBar
+import android.app.ActionBar.OnNavigationListener
 
 case class Student(name: String, marks: Map[String, String])
 object StudentDAO {
-  val group = "IO-25"
+  var group = "IO-25"
   val students = for (i <- 1 to 50) yield Student(s"Student $i", Map("17.02" -> "3"))
   val dates = Array("17.02", "24.02", "1.03", "8.03", "15.03", "Lab 1", "Lab 2", "Lab 3", "Lab 4", "Lab 5", "Lab 6",
     "Lab 7", "Lab 8", "Lab 9", "Lab 10", "Lab 11")
+  val groups = Array("IO-25", "IO-24")
 }
 
 class MainActivity extends SActivity {
@@ -20,6 +24,21 @@ class MainActivity extends SActivity {
   onCreate {
 
     import StudentDAO._
+
+    val actionBar = getActionBar()
+    val adapter = new ArrayAdapter[String](this, android.R.layout.simple_spinner_dropdown_item, groups)
+    val activity = this
+    val mNavListener = new OnNavigationListener {
+      def onNavigationItemSelected(position: Int, id: Long) = {
+        if (group != groups(position)) {
+          group = groups(position)
+          activity.recreate()
+        }
+        true
+      }
+    }
+    actionBar.setNavigationMode(ActionBar.NAVIGATION_MODE_LIST)
+    actionBar.setListNavigationCallbacks(adapter, mNavListener)
 
     contentView = new SVerticalLayout {
 
