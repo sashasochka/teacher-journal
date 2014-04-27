@@ -32,23 +32,23 @@ class MainActivity extends SActivity {
           this += new STableLayout {
             // Header row
             this += new STableRow {
-              STextView(group).backgroundColor(headerColor).<<.marginRight(1).marginBottom(1).>>
+              def textStyle(view: STextView) = view.backgroundColor(headerColor).<<.marginRight(1).marginBottom(1).>>
+              textStyle(STextView(group))
               for (date <- dates)
-                STextView(date).backgroundColor(headerColor).<<.marginRight(1).marginBottom(1).>>
+                textStyle(STextView(date))
             }
             // Student rows
-            for (student <- students.zipWithIndex)
+            for ((student, studentIndex) <- students.zipWithIndex)
               this += new STableRow {
-                STextView((student._2 + 1) + ". " + student._1.name).backgroundColor(headerColor).<<.
+                STextView(s"${studentIndex + 1}. ${student.name}").backgroundColor(headerColor).<<.
                   marginRight(1).marginBottom(1).>>
                 for (date <- dates)
-                  STextView(student._1.marks.getOrElse(date, "")).backgroundColor(cellColor).<<.marginRight(1).
+                  STextView(student.marks.getOrElse(date, "")).backgroundColor(cellColor).<<.marginRight(1).
                     marginBottom(1).>>
               }
           }
         }
       }
-
     }.backgroundColor(borderColor)
   }
 }
