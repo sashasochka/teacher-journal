@@ -7,7 +7,8 @@ case class Student(name: String, marks: Map[String, String])
 object StudentDAO {
   val group = "IO-25"
   val students = for (i <- 1 to 50) yield Student(s"Student $i", Map("17.02" -> "3"))
-  val dates = Array("17.02", "24.02", "1.03", "8.03", "15.03", "Lab 1", "Lab 2")
+  val dates = Array("17.02", "24.02", "1.03", "8.03", "15.03", "Lab 1", "Lab 2", "Lab 3", "Lab 4", "Lab 5", "Lab 6",
+    "Lab 7", "Lab 8", "Lab 9", "Lab 10", "Lab 11")
 }
 
 class MainActivity extends SActivity {
@@ -23,26 +24,28 @@ class MainActivity extends SActivity {
     contentView = new SVerticalLayout {
 
       style {
-        case t: STextView => t.textColor(Color.BLACK)
+        case t: STextView => t.textColor(Color.BLACK).maxLines(1).padding(2.dip)
       }
 
       this += new SScrollView {
-        this += new STableLayout {
-          // Header row
-          this += new STableRow {
-            STextView(group).backgroundColor(headerColor).<<.marginRight(1).marginBottom(1).>>
-            for (date <- dates)
-              STextView(date).backgroundColor(headerColor).<<.marginRight(1).marginBottom(1).>>
-          }
-          // Student rows
-          for (student <- students.zipWithIndex)
+        this += new SHorizontalScrollView {
+          this += new STableLayout {
+            // Header row
             this += new STableRow {
-              STextView((student._2 + 1) + ". " + student._1.name).backgroundColor(headerColor).<<.
-                marginRight(1).marginBottom(1).>>
+              STextView(group).backgroundColor(headerColor).<<.marginRight(1).marginBottom(1).>>
               for (date <- dates)
-                STextView(student._1.marks.getOrElse(date, "")).backgroundColor(cellColor).<<.marginRight(1).
-                  marginBottom(1).>>
+                STextView(date).backgroundColor(headerColor).<<.marginRight(1).marginBottom(1).>>
             }
+            // Student rows
+            for (student <- students.zipWithIndex)
+              this += new STableRow {
+                STextView((student._2 + 1) + ". " + student._1.name).backgroundColor(headerColor).<<.
+                  marginRight(1).marginBottom(1).>>
+                for (date <- dates)
+                  STextView(student._1.marks.getOrElse(date, "")).backgroundColor(cellColor).<<.marginRight(1).
+                    marginBottom(1).>>
+              }
+          }
         }
       }
 
