@@ -4,7 +4,7 @@ android.Plugin.androidBuild
 
 name := "teacher-journal"
 
-scalaVersion := "2.11.0"
+scalaVersion := "2.10.4"
 
 proguardCache in Android ++= Seq(
   ProguardCache("org.scaloid") % "org.scaloid"
