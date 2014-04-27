@@ -39,6 +39,7 @@ class MainActivity extends SActivity {
     }
     actionBar.setNavigationMode(ActionBar.NAVIGATION_MODE_LIST)
     actionBar.setListNavigationCallbacks(adapter, mNavListener)
+    actionBar.setDisplayShowTitleEnabled(false)
 
     contentView = new SVerticalLayout {
 
