@@ -46,6 +46,6 @@ class MainActivity extends SActivity {
         }
       }
 
-    }.backgroundColor(Color.RED)
+    }.backgroundColor(borderColor)
   }
 }
