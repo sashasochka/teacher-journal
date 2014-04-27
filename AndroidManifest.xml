@@ -3,6 +3,10 @@
       package="ua.kpi.teacherjournal"
       android:versionCode="1"
       android:versionName="0.1">
+    <uses-sdk
+        android:minSdkVersion="15"
+        android:maxSdkVersion="19"
+        android:targetSdkVersion="19"/>
     <application android:label="@string/app_name">
         <activity android:name="MainActivity"
                   android:label="@string/app_name">
