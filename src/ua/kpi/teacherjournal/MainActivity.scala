@@ -3,13 +3,20 @@ package ua.kpi.teacherjournal
 import org.scaloid.common._
 import android.app.ActionBar._
 import android.graphics.Color._
+import scala.language.postfixOps
+import android.view.Gravity
+import scala.util.Random
 
 case class Student(name: String, marks: Map[String, String])
 
 object StudentDAO {
-  val students = for (i <- 1 to 50) yield Student(s"Student $i", Map("17.02" -> "3"))
+  def randomMark =
+    if (Random.nextBoolean()) Random.nextInt(10).toString
+    else ""
+
   val dates = Array("17.02", "24.02", "1.03", "8.03", "15.03",
     "Lab 1", "Lab 2", "Lab 3", "Lab 4", "Lab 5", "Lab 6", "Lab 7", "Lab 8", "Lab 9", "Lab 10", "Lab 11")
+  val students = for (i <- 1 to 50) yield Student(s"Student $i", dates.map((_, randomMark)).toMap)
   val groups = Array("IO-25", "IO-24")
   var group_id = 0
 }
@@ -42,32 +49,51 @@ class MainActivity extends SActivity { self =>
 
     contentView = new SVerticalLayout {
 
-      style {
-        case t: STextView => t.textColor(BLACK).maxLines(1).padding(2.dip)
-      }
       this += new SScrollView {
-        this += new SHorizontalScrollView {
-          this += new STableLayout {
+        this += new SLinearLayout {
+          style {
+            case t: STextView => t.textColor(BLACK).maxLines(1).padding(20 dip, 10 dip, 20 dip, 10 dip).textSize(18 dip)
+          }
 
-            // Header row
-            this += new STableRow {
-              def textStyle(view: STextView) = view.backgroundColor(headerColor).<<.marginRight(1).marginBottom(1).>>
-              textStyle(STextView(groups(group_id)))
-              for (date <- dates)
-                textStyle(STextView(date))
+          this += new STableLayout {
+            style {
+              case t: STextView => t.backgroundColor(headerColor).<<.marginRight(1).marginBottom(1).>>
             }
 
-            // Student rows
+            STextView(groups(group_id))
+
             for ((student, studentIndex) <- students.zipWithIndex)
+              STextView(s"${studentIndex + 1}. ${student.name}")
+          }
+
+          this += new SHorizontalScrollView {
+            this += new STableLayout {
+
+              // Header row
               this += new STableRow {
 
-                STextView(s"${studentIndex + 1}. ${student.name}").backgroundColor(headerColor).
-                  <<.marginRight(1).marginBottom(1).>>
-
+                style {
+                  case t: STextView =>
+                    t.setGravity(Gravity.CENTER_HORIZONTAL)
+                    t.backgroundColor(headerColor).<<.marginRight(1).marginBottom(1).>>
+                }
                 for (date <- dates)
-                  STextView(student.marks.getOrElse(date, "")).backgroundColor(cellColor).
-                    <<.marginRight(1).marginBottom(1).>>
+                  STextView(date)
               }
+
+              // Student rows
+              for ((student, studentIndex) <- students.zipWithIndex)
+                this += new STableRow {
+                  style {
+                    case t: STextView =>
+                      t.setGravity(Gravity.CENTER_HORIZONTAL)
+                      t.backgroundColor(cellColor).<<.marginRight(1).marginBottom(1).>>
+                  }
+
+                  for (date <- dates)
+                    STextView(student.marks.getOrElse(date, ""))
+                }
+            }
           }
         }
       }

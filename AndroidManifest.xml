@@ -12,7 +12,8 @@
     <application android:label="@string/app_name"
         android:allowBackup="true"
         android:theme="@style/CustomActionBarTheme"
-        android:icon="@drawable/logo">
+        android:logo="@drawable/logo"
+        android:icon="@drawable/icon">
         <activity android:name="MainActivity"
                   android:label="@string/app_name">
             <intent-filter>
