@@ -14,9 +14,12 @@ object StudentDAO {
     if (Random.nextBoolean()) Random.nextInt(10).toString
     else ""
 
+  def randName =
+    Random.alphanumeric.filter(_.isLetter).take(Random.nextInt(8) + 5).mkString.toLowerCase.capitalize
+
   val dates = Array("17.02", "24.02", "1.03", "8.03", "15.03",
     "Lab 1", "Lab 2", "Lab 3", "Lab 4", "Lab 5", "Lab 6", "Lab 7", "Lab 8", "Lab 9", "Lab 10", "Lab 11")
-  val students = for (i <- 1 to 50) yield Student(s"Student $i", dates.map((_, randomMark)).toMap)
+  val students = for (i <- 1 to 50) yield Student(s"$randName $randName", dates.map((_, randomMark)).toMap)
   val groups = Array("IO-25", "IO-24")
   var group_id = 0
 }
