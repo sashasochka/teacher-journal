@@ -22,8 +22,12 @@ object StudentDAO {
   val dates = Array("17.02", "24.02", "1.03", "8.03", "15.03",
     "Lab 1", "Lab 2", "Lab 3", "Lab 4", "Lab 5", "Lab 6", "Lab 7", "Lab 8", "Lab 9", "Lab 10", "Lab 11")
   val students = for (i <- 1 to 50) yield Student(s"$randName $randName", dates.map((_, randomMark)).toMap)
+  val courses = Array("Об’єктно-орієнтоване програмування", "Основи програмування", "Математичний аналіз")
+  var courseId = 0
   val groups = Array("IO-25", "IO-24")
-  var group_id = 0
+  var groupId = 0
+  def selectedGroup = groups(groupId)
+  def selectedCourse = courses(courseId)
 }
 
 class MainActivity extends SActivity { self =>
@@ -48,11 +52,11 @@ class MainActivity extends SActivity { self =>
     import StudentDAO._
 
     val actionBar = getActionBar
-    val adapter = SArrayAdapter(android.R.layout.simple_spinner_dropdown_item, groups)
+    val adapter = SArrayAdapter(android.R.layout.simple_spinner_dropdown_item, courses)
     val mNavListener = new OnNavigationListener {
       def onNavigationItemSelected(position: Int, id: Long) = {
-        if (group_id != position) {
-          group_id = position
+        if (courseId != position) {
+          courseId = position
           self.recreate()
         }
         true
@@ -61,7 +65,7 @@ class MainActivity extends SActivity { self =>
     actionBar.setNavigationMode(NAVIGATION_MODE_LIST)
     actionBar.setListNavigationCallbacks(adapter, mNavListener)
     actionBar.setDisplayShowTitleEnabled(false)
-    actionBar.setSelectedNavigationItem(group_id)
+    actionBar.setSelectedNavigationItem(courseId)
 
     contentView = new SVerticalLayout {
 
@@ -76,7 +80,7 @@ class MainActivity extends SActivity { self =>
               case t: STextView => t.backgroundColor(headerColor).<<.marginRight(1).marginBottom(1).>>
             }
 
-            STextView(groups(group_id))
+            STextView(selectedGroup)
 
             for ((student, studentIndex) <- students.zipWithIndex)
               STextView(s"${studentIndex + 1}. ${student.name}")
