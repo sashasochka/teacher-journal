@@ -4,8 +4,10 @@ import org.scaloid.common._
 import android.app.ActionBar._
 import android.graphics.Color._
 import scala.language.postfixOps
-import android.view.Gravity
+import android.view.{Menu, Gravity}
 import scala.util.Random
+import android.widget.ShareActionProvider
+import android.content.Intent
 
 case class Student(name: String, marks: Map[String, String])
 
@@ -29,6 +31,17 @@ class MainActivity extends SActivity { self =>
   private val headerColor = rgb(0xe7, 0xe7, 0xe7)
   private val cellColor = WHITE
   private val borderColor = rgb(0xcc, 0xcc, 0xcc)
+
+  override def onCreateOptionsMenu(menu: Menu) = {
+    // setup menu
+    getMenuInflater.inflate(R.menu.main_activity_actions, menu)
+
+    // setup share button
+    val shareProvider = menu.findItem(R.id.action_share).getActionProvider.asInstanceOf[ShareActionProvider]
+    shareProvider.setShareIntent(new Intent(Intent.ACTION_SEND).setType("text/*"))
+
+    super.onCreateOptionsMenu(menu)
+  }
 
   onCreate {
 

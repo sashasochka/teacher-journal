@@ -1,4 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="app_name">Журнал</string>
+    <string name="action_callover">ПЕРЕКЛИЧКА</string>
+    <string name="action_share">ПОДІЛИТИСЯ</string>
+    <string name="action_1">1</string>
+    <string name="action_2">2</string>
 </resources>
