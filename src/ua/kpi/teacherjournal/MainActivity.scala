@@ -2,36 +2,13 @@ package ua.kpi.teacherjournal
 
 import org.scaloid.common._
 import android.app.ActionBar._
-import android.graphics.Color._
-import scala.language.postfixOps
-import android.view.{Menu, Gravity}
-import scala.util.Random
-import android.widget.ShareActionProvider
 import android.content.Intent
-
-case class Student(name: String, marks: Map[String, String])
-
-object StudentDAO {
-  def randomMark =
-    if (Random.nextBoolean()) Random.nextInt(10).toString
-    else ""
-
-  def randName =
-    Random.alphanumeric.filter(_.isLetter).take(Random.nextInt(8) + 5).mkString.toLowerCase.capitalize
-
-  val dates = Array("17.02", "24.02", "1.03", "8.03", "15.03",
-    "Lab 1", "Lab 2", "Lab 3", "Lab 4", "Lab 5", "Lab 6", "Lab 7", "Lab 8", "Lab 9", "Lab 10", "Lab 11")
-  val students = for (i <- 1 to 50) yield Student(s"$randName $randName", dates.map((_, randomMark)).toMap)
-  val courses = Array("Об’єктно-орієнтоване програмування", "Основи програмування", "Математичний аналіз")
-  var courseId = 0
-  val groups = Array("IO-25", "IO-24")
-  var groupId = 0
-  def selectedGroup = groups(groupId)
-  def selectedCourse = courses(courseId)
-}
+import android.graphics.Color._
+import android.view.{Menu, Gravity}
+import android.widget.ShareActionProvider
+import scala.language.postfixOps
 
 class MainActivity extends SActivity { self =>
-
   private val headerColor = rgb(0xe7, 0xe7, 0xe7)
   private val cellColor = WHITE
   private val borderColor = rgb(0xcc, 0xcc, 0xcc)
@@ -49,14 +26,15 @@ class MainActivity extends SActivity { self =>
 
   onCreate {
 
-    import StudentDAO._
+    import RandData._
 
     val actionBar = getActionBar
-    val adapter = SArrayAdapter(android.R.layout.simple_spinner_dropdown_item, courses)
+    val adapter = SArrayAdapter(android.R.layout.simple_spinner_dropdown_item, courses.map(_.name).toArray)
     val mNavListener = new OnNavigationListener {
       def onNavigationItemSelected(position: Int, id: Long) = {
         if (courseId != position) {
           courseId = position
+          groupId = 0
           self.recreate()
         }
         true
@@ -80,9 +58,9 @@ class MainActivity extends SActivity { self =>
               case t: STextView => t.backgroundColor(headerColor).<<.marginRight(1).marginBottom(1).>>
             }
 
-            STextView(selectedGroup)
+            STextView(selectedGroup.name)
 
-            for ((student, studentIndex) <- students.zipWithIndex)
+            for ((student, studentIndex) <- selectedGroup.students.zipWithIndex)
               STextView(s"${studentIndex + 1}. ${student.name}")
           }
 
@@ -97,12 +75,12 @@ class MainActivity extends SActivity { self =>
                     t.setGravity(Gravity.CENTER_HORIZONTAL)
                     t.backgroundColor(headerColor).<<.marginRight(1).marginBottom(1).>>
                 }
-                for (date <- dates)
-                  STextView(date)
+                for (column <- selectedGroup.columns)
+                  STextView(column)
               }
 
               // Student rows
-              for ((student, studentIndex) <- students.zipWithIndex)
+              for ((student, studentIndex) <- selectedGroup.students.zipWithIndex)
                 this += new STableRow {
                   style {
                     case t: STextView =>
@@ -110,8 +88,8 @@ class MainActivity extends SActivity { self =>
                       t.backgroundColor(cellColor).<<.marginRight(1).marginBottom(1).>>
                   }
 
-                  for (date <- dates)
-                    STextView(student.marks.getOrElse(date, ""))
+                  for (record <- student.records)
+                    STextView(record.displayString)
                 }
             }
           }
