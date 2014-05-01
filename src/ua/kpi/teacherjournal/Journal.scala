@@ -13,5 +13,5 @@ object Journal {
   case class Sheet(name: String, columns: Seq[Column], students: Seq[Student]) {
     require(students.forall(_.records.size == columns.size))
   }
-  case class Course(name: String, groups: Seq[Sheet])
+  case class Course(name: String, sheets: Seq[Sheet])
 }

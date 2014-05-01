@@ -11,12 +11,12 @@ object RandData {
   val groupNames = Vector("ІС-21", "ІС-22", "ІС-23", "ІС-24", "ІП-21", "ІП-22")
   val courseNames = Vector("Об’єктно-орієнтоване програмування", "Основи програмування", "Математичний аналіз")
   val courses = for (courseName <- courseNames)
-    yield Course(courseName, randomGroupJournals)
+    yield Course(courseName, randomSheets)
 
   var sheetId = 0
   var courseId = 0
-  def selectedSheet = courses(courseId)
-  def selectedGroup = selectedSheet.groups(sheetId)
+  def selectedCourse = courses(courseId)
+  def selectedSheet = selectedCourse.sheets(sheetId)
 
   private def randomRecord =
     if (Random.nextBoolean()) GradeRecord(Random.nextInt(10))
@@ -32,7 +32,7 @@ object RandData {
       (implicit bf: CanBuildFrom[CC[A], A, CC[A]]): CC[A] =
     Random.shuffle(set).take(Random.nextInt(set.size - 2) + 1)
 
-  private def randomGroupJournals =
+  private def randomSheets =
     for (groupName <- randomSubset(groupNames)) yield {
       val LabRegex = raw"Lab (\d)".r
       val DateRegex = raw"(\d\d)\.(\d\d)".r
