@@ -25,57 +25,58 @@ class TableFragment(sheet: Sheet) extends Fragment {
     implicit val ctx = getActivity
     require(ctx != null)
 
-    new SVerticalLayout {
-      this += new SScrollView {
-        this += new SLinearLayout {
+    new SScrollView {
+      this += new SLinearLayout {
+        style {
+          case t: STextView => t.textColor(BLACK)
+            .textSize(18 dip)
+            .maxLines(1)
+            .padding(20 dip, 10 dip, 20 dip, 10 dip)
+        }
+
+        this += new STableLayout {
           style {
-            case t: STextView => t.textColor(BLACK)
-              .textSize(18 dip)
-              .maxLines(1)
-              .padding(20 dip, 10 dip, 20 dip, 10 dip)
+            case t: STextView => t.backgroundColor(headerColor).<<
+              .marginRight(marginRight)
+              .marginBottom(marginBottom)
+              .>>
           }
 
+          STextView(sheet.name)
+          for ((student, studentIndex) <- sheet.students.zipWithIndex)
+            STextView(s"${studentIndex + 1}. ${student.name}")
+        }
+
+        this += new SHorizontalScrollView {
           this += new STableLayout {
-            style {
-              case t: STextView => t.backgroundColor(headerColor)
-                .<<.marginRight(marginRight).marginBottom(marginBottom).>>
-            }
 
-            STextView(sheet.name)
-            for ((student, studentIndex) <- sheet.students.zipWithIndex)
-              STextView(s"${studentIndex + 1}. ${student.name}")
-          }
+            // Header row
+            this += new STableRow {
 
-          this += new SHorizontalScrollView {
-            this += new STableLayout {
-
-              // Header row
-              this += new STableRow {
-
-                style {
-                  case t: STextView =>
-                    t.setGravity(Gravity.CENTER_HORIZONTAL)
-                    t.backgroundColor(headerColor)
-                      .<<.marginRight(marginRight).marginBottom(marginBottom).>>
-                }
-                for (column <- sheet.columns)
-                  STextView(column)
+              style {
+                case t: STextView => t.gravity(Gravity.CENTER_HORIZONTAL)
+                  .backgroundColor(headerColor).<<
+                  .marginRight(marginRight).marginBottom(marginBottom)
+                  .>>
               }
-
-              // Student rows
-              for ((student, studentIndex) <- sheet.students.zipWithIndex)
-                this += new STableRow {
-                  style {
-                    case t: STextView =>
-                      t.setGravity(Gravity.CENTER_HORIZONTAL)
-                      t.backgroundColor(cellColor)
-                        .<<.marginRight(marginRight).marginBottom(marginBottom).>>
-                  }
-
-                  for (record <- student.records)
-                    STextView(record.displayString)
-                }
+              for (column <- sheet.columns)
+                STextView(column)
             }
+
+            // Student rows
+            for ((student, studentIndex) <- sheet.students.zipWithIndex)
+              this += new STableRow {
+                style {
+                  case t: STextView => t.gravity(Gravity.CENTER_HORIZONTAL)
+                    .backgroundColor(cellColor).<<
+                    .marginRight(marginRight)
+                    .marginBottom(marginBottom)
+                    .>>
+                }
+
+                for (record <- student.records)
+                  STextView(record.displayString)
+              }
           }
         }
       }
