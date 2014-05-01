@@ -3,15 +3,11 @@ package ua.kpi.teacherjournal
 import org.scaloid.common._
 import android.app.ActionBar._
 import android.content.Intent
-import android.graphics.Color._
-import android.view.{Menu, Gravity}
+import android.view.{View, MenuItem, Menu}
 import android.widget.ShareActionProvider
 import scala.language.postfixOps
 
 class MainActivity extends SActivity { self =>
-  private val headerColor = rgb(0xe7, 0xe7, 0xe7)
-  private val cellColor = WHITE
-  private val borderColor = rgb(0xcc, 0xcc, 0xcc)
 
   override def onCreateOptionsMenu(menu: Menu) = {
     // setup menu
@@ -35,7 +31,9 @@ class MainActivity extends SActivity { self =>
         if (courseId != position) {
           courseId = position
           groupId = 0
-          self.recreate()
+          getFragmentManager.beginTransaction()
+            .replace(R.id.table_fragment, new TableFragment(selectedGroup))
+            .commit()
         }
         true
       }
@@ -45,56 +43,11 @@ class MainActivity extends SActivity { self =>
     actionBar.setDisplayShowTitleEnabled(false)
     actionBar.setSelectedNavigationItem(courseId)
 
-    contentView = new SVerticalLayout {
+    setContentView(R.layout.main_activity)
 
-      this += new SScrollView {
-        this += new SLinearLayout {
-          style {
-            case t: STextView => t.textColor(BLACK).maxLines(1).padding(20 dip, 10 dip, 20 dip, 10 dip).textSize(18 dip)
-          }
-
-          this += new STableLayout {
-            style {
-              case t: STextView => t.backgroundColor(headerColor).<<.marginRight(1).marginBottom(1).>>
-            }
-
-            STextView(selectedGroup.name)
-
-            for ((student, studentIndex) <- selectedGroup.students.zipWithIndex)
-              STextView(s"${studentIndex + 1}. ${student.name}")
-          }
-
-          this += new SHorizontalScrollView {
-            this += new STableLayout {
-
-              // Header row
-              this += new STableRow {
-
-                style {
-                  case t: STextView =>
-                    t.setGravity(Gravity.CENTER_HORIZONTAL)
-                    t.backgroundColor(headerColor).<<.marginRight(1).marginBottom(1).>>
-                }
-                for (column <- selectedGroup.columns)
-                  STextView(column)
-              }
-
-              // Student rows
-              for ((student, studentIndex) <- selectedGroup.students.zipWithIndex)
-                this += new STableRow {
-                  style {
-                    case t: STextView =>
-                      t.setGravity(Gravity.CENTER_HORIZONTAL)
-                      t.backgroundColor(cellColor).<<.marginRight(1).marginBottom(1).>>
-                  }
-
-                  for (record <- student.records)
-                    STextView(record.displayString)
-                }
-            }
-          }
-        }
-      }
-    }.backgroundColor(borderColor)
+    getFragmentManager.beginTransaction()
+      .add(R.id.table_fragment, new TableFragment(selectedGroup))
+      .commit()
+    find[View](R.id.table_fragment).backgroundColor = TableFragment.backgroundColor
   }
 }
