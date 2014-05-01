@@ -42,7 +42,7 @@ class TableFragment(sheet: Sheet) extends Fragment {
               .>>
           }
 
-          STextView(sheet.name)
+          STextView(sheet.name).gravity(Gravity.CENTER_HORIZONTAL)
           for ((student, studentIndex) <- sheet.students.zipWithIndex)
             STextView(s"${studentIndex + 1}. ${student.name}")
         }
