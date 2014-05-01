@@ -3,7 +3,7 @@ package ua.kpi.teacherjournal
 import org.scaloid.common._
 import android.app.ActionBar._
 import android.content.Intent
-import android.view.{View, MenuItem, Menu}
+import android.view.{View, Menu}
 import android.widget.ShareActionProvider
 import scala.language.postfixOps
 
@@ -30,7 +30,7 @@ class MainActivity extends SActivity { self =>
       def onNavigationItemSelected(position: Int, id: Long) = {
         if (courseId != position) {
           courseId = position
-          groupId = 0
+          sheetId = 0
           getFragmentManager.beginTransaction()
             .replace(R.id.table_fragment, new TableFragment(selectedGroup))
             .commit()

@@ -11,29 +11,29 @@ object RandData {
   val groupNames = Vector("ІС-21", "ІС-22", "ІС-23", "ІС-24", "ІП-21", "ІП-22")
   val courseNames = Vector("Об’єктно-орієнтоване програмування", "Основи програмування", "Математичний аналіз")
   val courses = for (courseName <- courseNames)
-    yield Course(courseName, randGroupJournals)
+    yield Course(courseName, randomGroupJournals)
 
-  var groupId = 0
+  var sheetId = 0
   var courseId = 0
-  def selectedCourse = courses(courseId)
-  def selectedGroup = selectedCourse.groups(groupId)
+  def selectedSheet = courses(courseId)
+  def selectedGroup = selectedSheet.groups(sheetId)
 
   private def randomRecord =
     if (Random.nextBoolean()) GradeRecord(Random.nextInt(10))
     else AbsentRecord
 
-  private def randStudentName =
+  private def randomStudentName =
     Random.alphanumeric.filter(_.isLetter).take(Random.nextInt(8) + 5).mkString.toLowerCase.capitalize
 
-  private def randStudentSeq(nStudents: Int, nColumns: Int) =
-    Vector.fill(nStudents)(Student(s"$randStudentName $randStudentName", Vector.fill(nColumns)(randomRecord)))
+  private def randomStudentSeq(nStudents: Int, nColumns: Int) =
+    Vector.fill(nStudents)(Student(s"$randomStudentName $randomStudentName", Vector.fill(nColumns)(randomRecord)))
 
-  private def randSubset[A, CC[X] <: TraversableLike[X, CC[X]]](set: CC[A])
+  private def randomSubset[A, CC[X] <: TraversableLike[X, CC[X]]](set: CC[A])
       (implicit bf: CanBuildFrom[CC[A], A, CC[A]]): CC[A] =
     Random.shuffle(set).take(Random.nextInt(set.size - 2) + 1)
 
-  private def randGroupJournals =
-    for (groupName <- randSubset(groupNames)) yield {
+  private def randomGroupJournals =
+    for (groupName <- randomSubset(groupNames)) yield {
       val LabRegex = raw"Lab (\d)".r
       val DateRegex = raw"(\d\d)\.(\d\d)".r
       val columns = List.fill(Random.nextInt(15) + 7)(randColumn).distinct.sortBy {
@@ -41,7 +41,7 @@ object RandData {
         case DateRegex(day, month) => month.toInt * 31 + day.toInt
         case _ => 0
       }
-      GroupSheet(groupName, columns, randStudentSeq(Random.nextInt(10) + 10, columns.size))
+      Sheet(groupName, columns, randomStudentSeq(Random.nextInt(10) + 10, columns.size))
     }
 
   private def randColumn =

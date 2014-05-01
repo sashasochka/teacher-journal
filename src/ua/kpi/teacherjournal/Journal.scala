@@ -10,8 +10,8 @@ object Journal {
   case object EmptyRecord extends Record
 
   case class Student(name: String, records: Seq[Record])
-  case class GroupSheet(name: String, columns: Seq[Column], students: Seq[Student]) {
+  case class Sheet(name: String, columns: Seq[Column], students: Seq[Student]) {
     require(students.forall(_.records.size == columns.size))
   }
-  case class Course(name: String, groups: Seq[GroupSheet])
+  case class Course(name: String, groups: Seq[Sheet])
 }

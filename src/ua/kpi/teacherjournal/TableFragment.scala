@@ -7,7 +7,7 @@ import android.os.Bundle
 import android.view.{Gravity, ViewGroup, LayoutInflater}
 import org.scaloid.common._
 import scala.language.postfixOps
-import ua.kpi.teacherjournal.Journal.GroupSheet
+import ua.kpi.teacherjournal.Journal.Sheet
 
 object TableFragment {
   val headerColor = rgb(0xe7, 0xe7, 0xe7)
@@ -18,7 +18,7 @@ object TableFragment {
   def marginBottom(implicit context: Context) = 1 dip
 }
 
-class TableFragment(sheet: GroupSheet) extends Fragment {
+class TableFragment(sheet: Sheet) extends Fragment {
   import TableFragment._
 
   override def onCreateView(inflater: LayoutInflater, container: ViewGroup, savedInstanceState: Bundle) = {
