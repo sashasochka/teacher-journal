@@ -4,8 +4,8 @@ object Journal {
   type Column = String
   type Grade = Int
 
-  sealed abstract class Record(val displayString: String = "")
-  case class GradeRecord(grade: Grade) extends Record(grade.toString)
+  sealed abstract class Record
+  case class GradeRecord(grade: Grade) extends Record
   case object AbsentRecord extends Record
   case object EmptyRecord extends Record
 

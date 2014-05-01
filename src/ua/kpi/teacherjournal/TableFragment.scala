@@ -7,12 +7,13 @@ import android.os.Bundle
 import android.view.{Gravity, ViewGroup, LayoutInflater}
 import org.scaloid.common._
 import scala.language.postfixOps
-import ua.kpi.teacherjournal.Journal.Sheet
+import ua.kpi.teacherjournal.Journal._
 
 object TableFragment {
   val headerColor = rgb(0xe7, 0xe7, 0xe7)
   val cellColor = WHITE
   val backgroundColor = rgb(0xcc, 0xcc, 0xcc)
+  val absentBackgroundColor = rgb(0xFF, 0xE5, 0xE6)
 
   def marginRight(implicit context: Context) = 1 dip
   def marginBottom(implicit context: Context) = 1 dip
@@ -74,8 +75,13 @@ class TableFragment(sheet: Sheet) extends Fragment {
                     .>>
                 }
 
-                for (record <- student.records)
-                  STextView(record.displayString)
+                for (record <- student.records) {
+                  record match {
+                    case GradeRecord(grade) => STextView(grade.toString)
+                    case AbsentRecord => STextView().backgroundColor(absentBackgroundColor)
+                    case EmptyRecord => STextView()
+                  }
+                }
               }
           }
         }

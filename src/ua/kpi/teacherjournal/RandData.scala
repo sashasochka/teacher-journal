@@ -20,7 +20,8 @@ object RandData {
 
   private def randomRecord =
     if (Random.nextBoolean()) GradeRecord(Random.nextInt(10))
-    else AbsentRecord
+    else if (Random.nextBoolean()) AbsentRecord
+    else EmptyRecord
 
   private def randomStudentName =
     Random.alphanumeric.filter(_.isLetter).take(Random.nextInt(8) + 5).mkString.toLowerCase.capitalize
