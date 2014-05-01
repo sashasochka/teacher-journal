@@ -32,6 +32,7 @@ class MainActivity extends SActivity { self =>
           courseId = position
           sheetId = 0
           getFragmentManager.beginTransaction()
+            .setCustomAnimations(android.R.animator.fade_in, android.R.animator.fade_out)
             .replace(R.id.table_fragment, new TableFragment(selectedGroup))
             .commit()
         }
@@ -46,6 +47,7 @@ class MainActivity extends SActivity { self =>
     setContentView(R.layout.main_activity)
 
     getFragmentManager.beginTransaction()
+      .setCustomAnimations(android.R.animator.fade_in, android.R.animator.fade_out)
       .add(R.id.table_fragment, new TableFragment(selectedGroup))
       .commit()
     find[View](R.id.table_fragment).backgroundColor = TableFragment.backgroundColor
