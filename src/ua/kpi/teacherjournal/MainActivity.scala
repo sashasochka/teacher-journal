@@ -6,7 +6,6 @@ import android.content.Intent
 import android.view.{View, Menu}
 import android.widget.ShareActionProvider
 import scala.language.postfixOps
-import Journal.Sheet
 
 class MainActivity extends SActivity { self =>
   import RandData._
@@ -22,13 +21,6 @@ class MainActivity extends SActivity { self =>
     super.onCreateOptionsMenu(menu)
   }
 
-  def updateTable(selectedSheet: Sheet) = {
-    getFragmentManager.beginTransaction()
-      .setCustomAnimations(android.R.animator.fade_in, android.R.animator.fade_out)
-      .replace(R.id.table_fragment, new TableFragment(selectedSheet))
-      .commit()
-  }
-
   def setupActionBar() = {
     val actionBar = getActionBar
     val adapter = SArrayAdapter(android.R.layout.simple_spinner_dropdown_item, courses.map(_.name).toArray)
@@ -37,7 +29,7 @@ class MainActivity extends SActivity { self =>
         if (courseId != position) {
           courseId = position
           sheetId = 0
-          updateTable(selectedSheet)
+          TableFragment.updateTable(selectedSheet, getFragmentManager)
         }
         true
       }
@@ -51,7 +43,7 @@ class MainActivity extends SActivity { self =>
   onCreate {
     setupActionBar()
     setContentView(R.layout.main_activity)
-    updateTable(selectedSheet)
+    TableFragment.updateTable(selectedSheet, getFragmentManager)
     find[View](R.id.table_fragment).backgroundColor = TableFragment.backgroundColor
   }
 }

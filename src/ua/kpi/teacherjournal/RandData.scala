@@ -41,7 +41,7 @@ object RandData {
     Random.shuffle(set).take(Random.nextInt(set.size - 2) + 1)
 
   private def randomSheets =
-    for (groupName <- randomSubset(groupNames)) yield {
+    (for (groupName <- randomSubset(groupNames)) yield {
       val LabRegex = raw"Lab (\d)".r
       val DateRegex = raw"(\d\d)\.(\d\d)".r
       val columns = List.fill(Random.nextInt(15) + 7)(randColumn).distinct.sortBy {
@@ -50,7 +50,7 @@ object RandData {
         case _ => 0
       }
       Sheet(groupName, columns, randomStudentSeq(Random.nextInt(10) + 10, columns.size))
-    }
+    }).sortBy(_.name)
 
   private def randColumn =
     if (Random.nextBoolean()) f"${Random.nextInt(30) + 1}%02d.${Random.nextInt(12) + 1}%02d"

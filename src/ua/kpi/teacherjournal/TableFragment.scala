@@ -1,11 +1,11 @@
 package ua.kpi.teacherjournal
 
-import android.app.Fragment
+import android.app.{FragmentManager, Fragment}
 import android.content.Context
 import android.graphics.Color._
 import android.os.Bundle
-import android.view.{Gravity, ViewGroup, LayoutInflater, View}
-import android.widget.{AdapterView, TextView}
+import android.view.{View, Gravity, ViewGroup, LayoutInflater}
+import android.widget.AdapterView
 import org.scaloid.common._
 import scala.language.postfixOps
 import ua.kpi.teacherjournal.Journal._
@@ -18,18 +18,17 @@ object TableFragment {
 
   def marginRight(implicit context: Context) = 1 dip
   def marginBottom(implicit context: Context) = 1 dip
+
+  def updateTable(selectedSheet: Sheet, fragmentManager: FragmentManager) =
+    fragmentManager.beginTransaction()
+      .setCustomAnimations(android.R.animator.fade_in, android.R.animator.fade_out)
+      .replace(R.id.table_fragment, new TableFragment(selectedSheet))
+      .commit()
 }
 
 class TableFragment(sheet: Sheet) extends Fragment {
   import TableFragment._
   import RandData._
-
-  def updateTable(selectedSheet: Sheet) = {
-    getFragmentManager.beginTransaction()
-      .setCustomAnimations(android.R.animator.fade_in, android.R.animator.fade_out)
-      .replace(R.id.table_fragment, new TableFragment(selectedSheet))
-      .commit()
-  }
 
   override def onCreateView(inflater: LayoutInflater, container: ViewGroup, savedInstanceState: Bundle) = {
     implicit val ctx = getActivity
@@ -46,27 +45,22 @@ class TableFragment(sheet: Sheet) extends Fragment {
 
         this += new STableLayout {
           style {
-            case t: STextView => t.backgroundColor(headerColor).<<
-              .marginRight(marginRight)
-              .marginBottom(marginBottom)
-              .>>
-            case t: SSpinner => t.backgroundColor(headerColor).<<
+            case t: TraitView[_] => t.backgroundColor(headerColor).<<
               .marginRight(marginRight)
               .marginBottom(marginBottom)
               .>>
           }
 
-          this += (new SSpinner {
-            adapter(SArrayAdapter(android.R.layout.simple_spinner_item, RandData.groupNames.toArray)
-              .dropDownViewResource(android.R.layout.simple_spinner_dropdown_item).style(_.textColor(BLACK)
-                .textSize(18 dip)
-                .maxLines(1)
-                .padding(20 dip, 2 dip, 20 dip, 3 dip))
-              )
-          }).selection(sheetId).onItemSelected((_: AdapterView[_], _: View, pos: Int, _: Long) => {
-            if (sheetId != pos) {
-              sheetId = pos;
-              updateTable(selectedSheet)
+          SSpinner().adapter(SArrayAdapter(selectedCourse.sheets.map(_.name).toArray)
+            .dropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
+            .style(_.textColor(BLACK)
+              .textSize(18 dip)
+              .maxLines(1)
+              .padding(20 dip, 2 dip, 20 dip, 3 dip))
+            ).selection(sheetId).onItemSelected((_: AdapterView[_], _: View, pos: Int, _: Long) => {
+              if (sheetId != pos) {
+                sheetId = pos
+                updateTable(selectedSheet, getFragmentManager)
               }
             })
           for ((student, studentIndex) <- sheet.students.zipWithIndex)
