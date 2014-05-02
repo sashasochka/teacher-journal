@@ -1,20 +1,28 @@
 package ua.kpi.teacherjournal
 
-import android.app.Fragment
-import android.content.Context
 import android.graphics.Color._
 import android.os.Bundle
-import android.view.{ViewGroup, LayoutInflater}
+import android.view.{Gravity, ViewGroup, LayoutInflater}
 import org.scaloid.common._
 import scala.language.postfixOps
+import android.app.FragmentManager
 
-object BottomBar extends Fragment {
-  val backgroundColor = rgb(0x1D, 0x2E, 0x35)
+object BottomBar extends RichFragment {
+  def setup(fragmentManager: FragmentManager) = {
+    fragmentManager.beginTransaction()
+      .replace(R.id.bottom_bar, this)
+      .commit()
+  }
 
   override def onCreateView(inflater: LayoutInflater, container: ViewGroup, savedInstanceState: Bundle) = {
-    implicit val ctx: Context = getActivity
+    require(ctx != null)
     new SRelativeLayout {
-      val lastSync = STextView("Остання синхронізація").textSize(12 dip)
+      backgroundColor = rgb(0x1D, 0x2E, 0x35)
+      val lastSync = STextView("Остання синхронізація: 11.10")
+        .textSize(18 dip)
+        .gravity(Gravity.CENTER_VERTICAL)
+        .textColor(GRAY).padding(25 dip).<<.fill.>>
+
     }
   }
 }

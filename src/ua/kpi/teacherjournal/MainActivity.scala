@@ -44,5 +44,6 @@ class MainActivity extends SActivity { self =>
     setupActionBar()
     setContentView(R.layout.main_activity)
     TableFragment.update(getFragmentManager, selectedSheet)
+    BottomBar.setup(getFragmentManager)
   }
 }
