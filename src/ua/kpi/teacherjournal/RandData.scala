@@ -49,7 +49,10 @@ object RandData {
         case DateRegex(day, month) => month.toInt * 31 + day.toInt
         case _ => 0
       }
-      Sheet(groupName, columns, randomStudentSeq(Random.nextInt(10) + 10, columns.size))
+      val students = randomStudentSeq(Random.nextInt(10) + 10, columns.size)
+      val bossIndex = Random.nextInt(students.size)
+      val studentsWithBoss = students.updated(bossIndex, students(bossIndex).copy(isBoss = true))
+      Sheet(groupName, columns, studentsWithBoss)
     }).sortBy(_.name)
 
   private def randColumn =

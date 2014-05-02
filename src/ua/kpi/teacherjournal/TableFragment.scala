@@ -13,6 +13,7 @@ import ua.kpi.teacherjournal.Journal._
 object TableFragment {
   val headerColor = rgb(0xe7, 0xe7, 0xe7)
   val cellColor = WHITE
+  val bossColor = rgb(0x99, 0x32, 0x31)
   val bgColor = rgb(0xcc, 0xcc, 0xcc)
   val absentBackgroundColor = rgb(0xFF, 0xE5, 0xE6)
 
@@ -69,8 +70,10 @@ class TableFragment extends RichFragment {
                 update(getFragmentManager, selectedSheet)
               }
             })
-          for ((student, studentIndex) <- sheet.students.zipWithIndex)
-            STextView(s"${studentIndex + 1}. ${student.name}")
+          for ((student, studentIndex) <- sheet.students.zipWithIndex) {
+            val tv = STextView(s"${studentIndex + 1}. ${student.name}")
+            if (student.isBoss) tv.textColor = bossColor
+          }
         }
 
         this += new SHorizontalScrollView {
