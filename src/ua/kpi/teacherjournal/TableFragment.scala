@@ -22,17 +22,27 @@ object TableFragment {
   def updateTable(selectedSheet: Sheet, fragmentManager: FragmentManager) =
     fragmentManager.beginTransaction()
       .setCustomAnimations(android.R.animator.fade_in, android.R.animator.fade_out)
-      .replace(R.id.table_fragment, new TableFragment(selectedSheet))
+      .replace(R.id.table_fragment, TableFragment(selectedSheet))
       .commit()
+
+  def apply(sheet: Sheet) = {
+    val f = new TableFragment
+    val bdl = new Bundle(2)
+    bdl.putSerializable("sheet", sheet)
+    f.setArguments(bdl)
+    f
+  }
 }
 
-class TableFragment(sheet: Sheet) extends Fragment {
+class TableFragment extends Fragment {
   import TableFragment._
   import RandData._
 
   override def onCreateView(inflater: LayoutInflater, container: ViewGroup, savedInstanceState: Bundle) = {
     implicit val ctx = getActivity
     require(ctx != null)
+
+    val sheet = getArguments.get("sheet").asInstanceOf[Sheet]
 
     new SScrollView {
       this += new SLinearLayout {
