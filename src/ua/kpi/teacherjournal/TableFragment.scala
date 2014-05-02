@@ -1,6 +1,6 @@
 package ua.kpi.teacherjournal
 
-import android.app.{FragmentManager, Fragment}
+import android.app.FragmentManager
 import android.content.Context
 import android.graphics.Color._
 import android.os.Bundle
@@ -26,23 +26,18 @@ object TableFragment {
       .commit()
 
   def apply(sheet: Sheet) = {
-    val f = new TableFragment
-    val bdl = new Bundle(2)
-    bdl.putSerializable("sheet", sheet)
-    f.setArguments(bdl)
-    f
+    (new TableFragment).setArguments("sheet" -> sheet)
   }
 }
 
-class TableFragment extends Fragment {
+class TableFragment extends RichFragment {
   import TableFragment._
   import RandData._
 
   override def onCreateView(inflater: LayoutInflater, container: ViewGroup, savedInstanceState: Bundle) = {
-    implicit val ctx = getActivity
     require(ctx != null)
 
-    val sheet = getArguments.get("sheet").asInstanceOf[Sheet]
+    val sheet = arg[Sheet]("sheet")
 
     new SScrollView {
       this += new SLinearLayout {
