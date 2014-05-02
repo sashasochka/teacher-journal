@@ -13,13 +13,13 @@ import ua.kpi.teacherjournal.Journal._
 object TableFragment {
   val headerColor = rgb(0xe7, 0xe7, 0xe7)
   val cellColor = WHITE
-  val backgroundColor = rgb(0xcc, 0xcc, 0xcc)
+  val bgColor = rgb(0xcc, 0xcc, 0xcc)
   val absentBackgroundColor = rgb(0xFF, 0xE5, 0xE6)
 
   def marginRight(implicit context: Context) = 1 dip
   def marginBottom(implicit context: Context) = 1 dip
 
-  def updateTable(selectedSheet: Sheet, fragmentManager: FragmentManager) =
+  def update(fragmentManager: FragmentManager, selectedSheet: Sheet) =
     fragmentManager.beginTransaction()
       .setCustomAnimations(android.R.animator.fade_in, android.R.animator.fade_out)
       .replace(R.id.table_fragment, TableFragment(selectedSheet))
@@ -40,6 +40,7 @@ class TableFragment extends RichFragment {
     val sheet = arg[Sheet]("sheet")
 
     new SScrollView {
+      backgroundColor = bgColor
       this += new SLinearLayout {
         style {
           case t: STextView => t.textColor(BLACK)
@@ -65,7 +66,7 @@ class TableFragment extends RichFragment {
             ).selection(sheetId).onItemSelected((_: AdapterView[_], _: View, pos: Int, _: Long) => {
               if (sheetId != pos) {
                 sheetId = pos
-                updateTable(selectedSheet, getFragmentManager)
+                update(getFragmentManager, selectedSheet)
               }
             })
           for ((student, studentIndex) <- sheet.students.zipWithIndex)

@@ -29,7 +29,7 @@ class MainActivity extends SActivity { self =>
         if (courseId != position) {
           courseId = position
           sheetId = 0
-          TableFragment.updateTable(selectedSheet, getFragmentManager)
+          TableFragment.update(getFragmentManager, selectedSheet)
         }
         true
       }
@@ -43,7 +43,6 @@ class MainActivity extends SActivity { self =>
   onCreate {
     setupActionBar()
     setContentView(R.layout.main_activity)
-    TableFragment.updateTable(selectedSheet, getFragmentManager)
-    find[View](R.id.table_fragment).backgroundColor = TableFragment.backgroundColor
+    TableFragment.update(getFragmentManager, selectedSheet)
   }
 }
