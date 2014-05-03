@@ -4,6 +4,7 @@ import scala.util.Random
 import scala.collection.TraversableLike
 import scala.collection.generic.CanBuildFrom
 import scala.language.higherKinds
+import android.text.format.Time
 
 object RandData {
   import Journal._
@@ -17,13 +18,32 @@ object RandData {
     "Сочка", "Левицький", "Ленець", "Панійван", "Гук", "Місюра", "Головань", "Базелюк",
     "Калапуша", "Поляков", "Талашко", "Борисов")
   val courseNames = Vector("Об’єктно-орієнтоване програмування", "Основи програмування", "Математичний аналіз")
+  val classTimes = List(
+    ClassTimePeriod(HourMinute(8, 30), HourMinute(10, 5)),
+    ClassTimePeriod(HourMinute(10, 25), HourMinute(12, 0)),
+    ClassTimePeriod(HourMinute(12, 20), HourMinute(13, 55)),
+    ClassTimePeriod(HourMinute(14, 15), HourMinute(15, 50)),
+    ClassTimePeriod(HourMinute(16, 10), HourMinute(17, 45))
+  )
+
   val courses = for (courseName <- courseNames)
     yield Course(courseName, randomSheets)
-
   var sheetId = 0
   var courseId = 0
   def selectedCourse = courses(courseId)
+
   def selectedSheet = selectedCourse.sheets(sheetId)
+  def timeUntilClassEnd = {
+    val curTime = new Time()
+    curTime.setToNow()
+//    val curHourMinute = HourMinute(curTime.hour, curTime.minute)
+    val curHourMinute = HourMinute(12, 59 + Random.nextInt(10)) // for debugging
+    for (curClass <- classTimes.find(c => c.start < curHourMinute && curHourMinute < c.end))
+      yield curClass.end - curHourMinute
+  }
+
+  def randomTime =
+    "%02d:%02d".format(Random.nextInt(24), Random.nextInt(60))
 
   private def randomRecord =
     if (Random.nextBoolean()) GradeRecord(Random.nextInt(10))

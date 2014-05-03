@@ -14,4 +14,13 @@ object Journal {
     require(students.forall(_.records.size == columns.size))
   }
   case class Course(name: String, sheets: Seq[Sheet])
+
+  case class HourMinute(hour: Int, minute: Int) extends Ordered[HourMinute] {
+    override def compare(that: HourMinute) = (hour - that.hour) * 60 + (minute - that.minute)
+    def -(that: HourMinute) = {
+      val diff = (hour - that.hour) * 60 + (minute - that.minute)
+      HourMinute(diff / 60, diff % 60)
+    }
+  }
+  case class ClassTimePeriod(start: HourMinute, end: HourMinute)
 }

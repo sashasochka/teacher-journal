@@ -3,6 +3,14 @@
     <string name="app_name">Журнал</string>
     <string name="action_callover">ПЕРЕКЛИЧКА</string>
     <string name="action_share">ПОДІЛИТИСЯ</string>
+    <string name="last_sync">Остання синхронізація</string>
+    <string name="until_class_end">До кінця пари</string>
+    <string name="minute">хвилина</string>
+    <string name="minutes_paucal">хвилини</string>
+    <string name="minutes">хвилин</string>
+    <string name="hour">година</string>
+    <string name="hours_paucal">години</string>
+    <string name="hours">годин</string>
     <string name="action_1">1</string>
     <string name="action_2">2</string>
 </resources>
