@@ -20,7 +20,6 @@ object BottomBar {
 }
 
 class BottomBar extends RichFragment {
-
   def untilClassEndText(implicit ctx: Context) = timeUntilClassEnd match {
       case Some(HourMinute(hours, minutes)) =>
         import R.{string => RS}
@@ -36,7 +35,7 @@ class BottomBar extends RichFragment {
     require(ctx != null)
     new SRelativeLayout {
       backgroundColor = rgb(0x1D, 0x2E, 0x35)
-      val untilClassEnd = STextView(untilClassEndText)
+      val untilClassEnd = STextView()
         .textSize(25 dip)
         .textColor(WHITE)
         .gravity(Gravity.CENTER_VERTICAL)
@@ -54,6 +53,13 @@ class BottomBar extends RichFragment {
         .<<(WRAP_CONTENT, MATCH_PARENT)
         .alignParentLeft
         .>>
+      def updateTime(): Unit = {
+        if (ctx != null) {
+          untilClassEnd.text(untilClassEndText)
+          postDelayed(updateTime(), 1000)
+        }
+      }
+      updateTime()
     }
   }
 }

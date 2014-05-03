@@ -36,8 +36,8 @@ object RandData {
   def timeUntilClassEnd = {
     val curTime = new Time()
     curTime.setToNow()
-//    val curHourMinute = HourMinute(curTime.hour, curTime.minute)
-    val curHourMinute = HourMinute(12, 59 + Random.nextInt(10)) // for debugging
+    val curHourMinute = HourMinute(curTime.hour, curTime.minute)
+    // val curHourMinute = HourMinute(12, 59 + Random.nextInt(10)) // for debugging
     for (curClass <- classTimes.find(c => c.start < curHourMinute && curHourMinute < c.end))
       yield curClass.end - curHourMinute
   }
