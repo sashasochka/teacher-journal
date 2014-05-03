@@ -11,6 +11,6 @@
     <string name="hour">година</string>
     <string name="hours_paucal">години</string>
     <string name="hours">годин</string>
-    <string name="action_1">1</string>
-    <string name="action_2">2</string>
+    <string name="action_settings">Налаштування</string>
+    <string name="action_exit">Вихід</string>
 </resources>
