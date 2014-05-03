@@ -8,8 +8,8 @@ import org.scaloid.common._
 import scala.language.postfixOps
 import android.app.FragmentManager
 import RandData._
-import ua.kpi.teacherjournal.Journal.HourMinute
 import Word.correctForm
+import ua.kpi.teacherjournal.Journal.HourMinute
 
 object BottomBar {
   def setup(fragmentManager: FragmentManager) = {
@@ -23,11 +23,15 @@ class BottomBar extends RichFragment {
   def untilClassEndText(implicit ctx: Context) = timeUntilClassEnd match {
       case Some(HourMinute(hours, minutes)) =>
         import R.{string => RS}
-        val hrs = if (hours == 0) ""
-          else s"$hours ${correctForm(hours, RS.hour, RS.hours_paucal, RS.hours)} "
-        val mins = if (minutes == 0) ""
-          else minutes + " " + correctForm(minutes, RS.minute, RS.minutes_paucal, RS.minutes)
-        R.string.until_class_end.r2String + ": " + hrs + mins
+        if (isLandscapeOrientation) {
+          val hrs = if (hours == 0) ""
+            else s"$hours ${correctForm(hours, RS.hour, RS.hours_paucal, RS.hours)} "
+          val mins = if (minutes == 0) ""
+            else minutes + " " + correctForm(minutes, RS.minute, RS.minutes_paucal, RS.minutes)
+          R.string.until_class_end.r2String + ": " + hrs + mins
+        } else {
+          R.string.until_class_end.r2String + ": %01d:%02d".format(hours, minutes)
+        }
       case None => ""
     }
 

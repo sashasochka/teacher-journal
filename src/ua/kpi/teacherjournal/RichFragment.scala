@@ -2,6 +2,8 @@ package ua.kpi.teacherjournal
 
 import android.app.Fragment
 import android.os.Bundle
+import org.scaloid.common._
+import android.view.Surface
 
 class RichFragment extends Fragment {
   implicit def ctx = getActivity
@@ -16,4 +18,9 @@ class RichFragment extends Fragment {
     setArguments(bdl)
     this
   }
+
+  def isLandscapeOrientation =
+    List(Surface.ROTATION_0, Surface.ROTATION_180) contains windowManager.getDefaultDisplay.getRotation
+
+  def isPortraitOrientation = !isLandscapeOrientation
 }
