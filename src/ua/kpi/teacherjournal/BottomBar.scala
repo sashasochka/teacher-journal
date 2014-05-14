@@ -6,7 +6,7 @@ import android.os.Bundle
 import android.view.{Gravity, ViewGroup, LayoutInflater}
 import org.scaloid.common._
 import scala.language.postfixOps
-import android.app.FragmentManager
+import android.app.{Fragment, FragmentManager}
 import RandData._
 import Word.correctForm
 import ua.kpi.teacherjournal.Journal.HourMinute
@@ -19,7 +19,7 @@ object BottomBar {
   }
 }
 
-class BottomBar extends RichFragment {
+class BottomBar extends Fragment with RichFragment {
   def untilClassEndText(implicit ctx: Context) = timeUntilClassEnd match {
       case Some(HourMinute(hours, minutes)) =>
         import R.{string => RS}

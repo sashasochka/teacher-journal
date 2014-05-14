@@ -1,6 +1,6 @@
 package ua.kpi.teacherjournal
 
-import android.app.FragmentManager
+import android.app.{Fragment, FragmentManager}
 import android.content.Context
 import android.graphics.Color._
 import android.os.Bundle
@@ -31,7 +31,7 @@ object TableFragment {
   }
 }
 
-class TableFragment extends RichFragment {
+class TableFragment extends Fragment with RichFragment {
   import TableFragment._
   import RandData._
 
