@@ -40,7 +40,7 @@ class BottomBar extends RichFragment {
     new SRelativeLayout {
       backgroundColor = rgb(0x1D, 0x2E, 0x35)
       val untilClassEnd = STextView()
-        .textSize(25 dip)
+        .textSize(18 dip)
         .textColor(WHITE)
         .gravity(Gravity.CENTER_VERTICAL)
         .padding(0, 0, 25 dip, 0)
@@ -48,7 +48,7 @@ class BottomBar extends RichFragment {
         .alignParentRight
         .>>
       val lastSync = STextView(s"${R.string.last_sync.r2String}: $randomTime")
-        .textSize(18 dip)
+        .textSize(14 dip)
         .gravity(Gravity.CENTER_VERTICAL)
         .textColor(GRAY)
         .drawableLeft(R.drawable.ic_action_refresh)
