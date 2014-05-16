@@ -11,7 +11,7 @@ trait RichFragment { self: Fragment =>
   def arg[T](argName: String) =
     getArguments.get(argName).asInstanceOf[T]
 
-  def setArguments(args: (String, Serializable)*): this.type = {
+  def setArguments(args: (String, java.io.Serializable)*): this.type = {
     val bdl = new Bundle(args.size)
     for ((key, value) <- args)
       bdl.putSerializable(key, value)

@@ -3,7 +3,7 @@ package ua.kpi.teacherjournal
 import org.scaloid.common._
 import android.app.ActionBar._
 import android.content.Intent
-import android.view.{View, Menu}
+import android.view.{MenuItem, View, Menu}
 import android.widget.ShareActionProvider
 import scala.language.postfixOps
 
@@ -38,6 +38,10 @@ class MainActivity extends SActivity { self =>
     actionBar.setListNavigationCallbacks(adapter, mNavListener)
     actionBar.setDisplayShowTitleEnabled(false)
     actionBar.setSelectedNavigationItem(courseId)
+  }
+
+  def startCallOver(item: MenuItem) = {
+    CallOverDialogFragment.show(getFragmentManager, RandData.selectedSheet.students.map(_.name))
   }
 
   onCreate {

@@ -4,6 +4,7 @@
     <!-- Settings, should always be in the overflow -->
     <item android:id="@+id/tmp_id"
         android:title="@string/action_callover"
+        android:onClick="startCallOver"
         android:showAsAction="always" />
     <item android:id="@+id/action_share"
         android:title="@string/action_share"
