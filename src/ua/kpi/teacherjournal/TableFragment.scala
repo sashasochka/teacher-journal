@@ -9,6 +9,7 @@ import android.widget.AdapterView
 import org.scaloid.common._
 import scala.language.postfixOps
 import ua.kpi.teacherjournal.Journal._
+import android.graphics.drawable.GradientDrawable
 
 object TableFragment {
   val headerColor = rgb(0xe7, 0xe7, 0xe7)
@@ -93,24 +94,45 @@ class TableFragment extends Fragment with RichFragment {
             }
 
             // Student rows
-            for ((student, studentIndex) <- sheet.students.zipWithIndex)
+            var selectedCell: Option[(STextView, Record)] = None
+            for ((student, studentIndex) <- sheet.students.zipWithIndex) {
               this += new STableRow {
-                style {
-                  case t: STextView => t.gravity(Gravity.CENTER_HORIZONTAL)
-                    .backgroundColor(cellColor).<<
-                    .marginRight(marginRight)
-                    .marginBottom(marginBottom)
-                    .>>
-                }
-
                 for (record <- student.records) {
-                  record match {
-                    case GradeRecord(grade) => STextView(grade.toString)
-                    case AbsentRecord => STextView().backgroundColor(absentBackgroundColor)
-                    case EmptyRecord => STextView()
+                  style {
+                    case t: STextView => t.gravity(Gravity.CENTER_HORIZONTAL)
+                      .<<
+                      .marginRight(marginRight)
+                      .marginBottom(marginBottom)
+                      .>>
+                  }
+
+                  def cellBgColor(record: Record) = record match {
+                    case AbsentRecord => absentBackgroundColor
+                    case _ => cellColor
+                  }
+
+                  val cellText = record match {
+                    case GradeRecord(grade) => grade.toString
+                    case _ => ""
+                  }
+
+                  val cellView = STextView(cellText)
+                    .backgroundColor(cellBgColor(record))
+
+                  cellView.onClick {
+                    selectedCell match {
+                      case Some((cell, rec)) => cell.backgroundColor(cellBgColor(rec))
+                      case None =>
+                    }
+                    val d = new GradientDrawable()
+                    d.setStroke(2 dip, rgb(0x4d, 0x93, 0xc3))
+                    d.setColor(cellBgColor(record))
+                    cellView.backgroundDrawable = d
+                    selectedCell = Some(cellView, record)
                   }
                 }
               }
+            }
           }
         }
       }
