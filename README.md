@@ -1,5 +1,7 @@
 # Journal for KPI teachers
 
+[![Build Status](https://travis-ci.org/sochka/teacher-journal.svg?branch=master)](https://travis-ci.org/sochka/teacher-journal)
+
 Prerequisites
 -------------
 * sbt 0.13.0 or above
