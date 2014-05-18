@@ -1,10 +1,10 @@
 package ua.kpi.teacherjournal
 
-import scala.util.Random
+import android.text.format.Time
 import scala.collection.TraversableLike
 import scala.collection.generic.CanBuildFrom
 import scala.language.higherKinds
-import android.text.format.Time
+import scala.util.Random
 
 object RandData {
   import Journal._

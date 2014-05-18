@@ -1,9 +1,8 @@
 package ua.kpi.teacherjournal
 
+import android.view.View
 import android.widget.{HorizontalScrollView, ScrollView}
 import org.scaloid.common.{SHorizontalScrollView, TraitViewGroup, SScrollView}
-import android.view.View
-
 
 class SScrollViewSynchronized(view: => ScrollView, disableScrollBar: Boolean = false)
   (implicit context: android.content.Context, parentVGroup: TraitViewGroup[_] = null)

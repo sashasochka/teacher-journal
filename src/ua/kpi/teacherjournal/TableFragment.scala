@@ -2,15 +2,15 @@ package ua.kpi.teacherjournal
 
 import android.app.{Fragment, FragmentManager}
 import android.content.Context
+import android.graphics.drawable.GradientDrawable
 import android.graphics.Color._
 import android.os.Bundle
 import android.view._
 import android.widget.AdapterView
 import org.scaloid.common._
+import scala.collection.mutable.ArrayBuffer
 import scala.language.postfixOps
 import ua.kpi.teacherjournal.Journal._
-import android.graphics.drawable.GradientDrawable
-import scala.collection.mutable.ArrayBuffer
 
 object TableFragment {
   val headerColor = rgb(0xe7, 0xe7, 0xe7)
@@ -19,8 +19,8 @@ object TableFragment {
   val bgColor = rgb(0xcc, 0xcc, 0xcc)
   val absentBackgroundColor = rgb(0xFF, 0xE5, 0xE6)
 
-  def marginLeft(implicit context: Context) = 1 dip
-  def marginBottom(implicit context: Context) = 1 dip
+  def marginLeft(implicit ctx: Context) = 1 dip
+  def marginBottom(implicit ctx: Context) = 1 dip
 
   def update(fragmentManager: FragmentManager, selectedSheet: Sheet) =
     fragmentManager.beginTransaction()
@@ -38,7 +38,7 @@ class TableFragment extends Fragment with RichFragment {
   import RandData._
 
   override def onCreateView(inflater: LayoutInflater, container: ViewGroup, savedInstanceState: Bundle) = {
-    require(ctx != null)
+    assert(ctx != null)
 
     val sheet = arg[Sheet]("sheet")
     new SVerticalLayout {
@@ -82,6 +82,7 @@ class TableFragment extends Fragment with RichFragment {
               val header = new STextView(column) {
                 override def onMeasure(w: Int, h: Int) = {
                   super.onMeasure(w, h)
+                  assert(cellViews.size == rowLayouts.size)
                   for ((cell, rowIndex) <- cellViews.map(_(colIndex)).zipWithIndex) {
                     val layout = rowLayouts(rowIndex)
                     cell

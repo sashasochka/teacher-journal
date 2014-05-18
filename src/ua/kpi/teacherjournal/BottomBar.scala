@@ -4,6 +4,7 @@ import android.app._
 import android.content.Context
 import android.graphics.Color._
 import android.os.Bundle
+import android.text.format.DateUtils
 import android.view._
 import org.scaloid.common._
 import RandData._
@@ -61,7 +62,8 @@ class BottomBar extends Fragment with RichFragment {
                     positive.visibility(View.INVISIBLE)
                     negative.visibility(View.INVISIBLE)
                 }
-                postDelayed(updateView(), 1000)
+                postDelayed(updateView(),
+                  DateUtils.MINUTE_IN_MILLIS - System.currentTimeMillis % DateUtils.MINUTE_IN_MILLIS)
               }
           }
           updateView()
