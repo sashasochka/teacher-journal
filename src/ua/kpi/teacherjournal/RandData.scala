@@ -45,7 +45,7 @@ object RandData {
   def randomTime =
     "%02d:%02d".format(Random.nextInt(24), Random.nextInt(60))
 
-  private def randomRecord =
+  def randomRecord =
     if (Random.nextBoolean()) GradeRecord(Random.nextInt(10))
     else if (Random.nextBoolean()) AbsentRecord
     else EmptyRecord
@@ -64,7 +64,7 @@ object RandData {
     (for (groupName <- randomSubset(groupNames)) yield {
       val LabRegex = raw"Lab (\d)".r
       val DateRegex = raw"(\d\d)\.(\d\d)".r
-      val columns = List.fill(Random.nextInt(15) + 7)(randColumn).distinct.sortBy {
+      val columns = List.fill(Random.nextInt(15) + 7)(randomColumn).distinct.sortBy {
         case LabRegex(labIndex) => labIndex.toInt + 10000
         case DateRegex(day, month) => month.toInt * 31 + day.toInt
         case _ => 0
@@ -75,7 +75,7 @@ object RandData {
       Sheet(groupName, columns, studentsWithBoss)
     }).sortBy(_.name)
 
-  private def randColumn =
+  def randomColumn =
     if (Random.nextBoolean()) f"${Random.nextInt(30) + 1}%02d.${Random.nextInt(12) + 1}%02d"
     else s"Lab ${Random.nextInt(10)}"
 }
