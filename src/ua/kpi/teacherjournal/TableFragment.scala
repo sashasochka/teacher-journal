@@ -42,7 +42,7 @@ class TableFragment extends Fragment with RichFragment {
   var headerLayout: SLinearLayout = _
   val rowLayouts = ArrayBuffer[STableRow]()
   val cellViews = ArrayBuffer[ArrayBuffer[STextView]]()
-  var addColBtn: SButton = _
+  var addColBtn: SImageButton = _
   var selectedCell: Option[(STextView, Record)] = None
 
   def createHeader(index: Int, text: String) = {
@@ -132,7 +132,7 @@ class TableFragment extends Fragment with RichFragment {
         headersScrollView = new SHorizontalScrollViewSynchronized(cellsHScrollView, disableScrollBar = true) {
           headerLayout = new SLinearLayout {
             style {
-              case v: TraitTextView[_] => v
+              case v: TraitView[_] => v
                 .backgroundColor(headerColor)
                 .<<.fill
                 .marginLeft(marginLeft)
@@ -146,9 +146,9 @@ class TableFragment extends Fragment with RichFragment {
             }
 
             // new column adder button
-            addColBtn = new SButton("+++") {
-              padding(20 dip, 0, 20 dip, 0)
-              textColor = BLACK
+            addColBtn = new SImageButton(R.drawable.add_new_col) {
+              padding(15 dip, 4 dip, 15 dip, 4 dip)
+
               override def onMeasure(w: Int, h: Int) = {
                 super.onMeasure(w, h)
                 setColumnWidth(rowLayouts.head.getChildCount - 1, getMeasuredWidth)
