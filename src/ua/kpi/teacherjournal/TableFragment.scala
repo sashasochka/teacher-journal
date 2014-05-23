@@ -19,7 +19,7 @@ object TableFragment {
   val bgColor = rgb(0xcc, 0xcc, 0xcc)
   val absentBackgroundColor = rgb(0xFF, 0xE5, 0xE6)
 
-  def marginLeft(implicit ctx: Context) = 1 dip
+  def marginHorizontal(implicit ctx: Context) = 1 dip
   def marginBottom(implicit ctx: Context) = 1 dip
 
   def update(fragmentManager: FragmentManager, selectedSheet: Sheet) =
@@ -88,7 +88,7 @@ class TableFragment extends Fragment with RichFragment {
       val layout = rowLayouts(rowIndex)
       cell
         .<<(width, ViewGroup.LayoutParams.WRAP_CONTENT)(new layout.LayoutParams(_))
-        .marginLeft(marginLeft)
+        .marginRight(marginHorizontal)
         .marginBottom(marginBottom)
     }
   }
@@ -112,7 +112,7 @@ class TableFragment extends Fragment with RichFragment {
         groupSpinner = SSpinner()
           .backgroundResource(R.drawable.group_spinner_bg)
           .<<
-          .marginLeft(marginLeft).marginBottom(marginBottom)
+          .marginBottom(marginBottom)
           .>>
           .adapter(
             SArrayAdapter(selectedCourse.sheets.map(_.name).toArray)
@@ -132,12 +132,13 @@ class TableFragment extends Fragment with RichFragment {
           })
 
         headersScrollView = new SHorizontalScrollViewSynchronized(cellsHScrollView, disableScrollBar = true) {
+          <<.marginLeft(marginHorizontal).>>
           headerLayout = new SLinearLayout {
             style {
               case v: TraitView[_] => v
                 .backgroundColor(headerColor)
                 .<<.fill
-                .marginLeft(marginLeft)
+                .marginRight(marginHorizontal)
                 .marginBottom(marginBottom)
                 .>>
             }
@@ -192,16 +193,14 @@ class TableFragment extends Fragment with RichFragment {
             for ((student, studentIndex) <- sheet.students.zipWithIndex) {
               val tv = STextView(s"${studentIndex + 1}. ${student.name}")
                 .backgroundColor(headerColor)
-                .<<
-                .marginLeft(marginLeft)
-                .marginBottom(marginBottom)
-                .>>
+                .<<.marginBottom(marginBottom).>>
               if (student.isBoss) tv.textColor = bossColor
             }
           }
         }
 
         cellsScrollView = new SScrollViewSynchronized(namesScrollView) {
+          <<.marginLeft(marginHorizontal).>>
           cellsHScrollView = new SHorizontalScrollViewSynchronized(headersScrollView) {
             this += new STableLayout {
               // Student marks (main table)
