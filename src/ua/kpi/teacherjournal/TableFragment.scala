@@ -110,17 +110,19 @@ class TableFragment extends Fragment with RichFragment {
 
       this += new SLinearLayout {
         groupSpinner = SSpinner()
-          .backgroundColor(headerColor)
+          .backgroundResource(R.drawable.group_spinner_bg)
           .<<
           .marginLeft(marginLeft).marginBottom(marginBottom)
           .>>
-          .adapter(SArrayAdapter(selectedCourse.sheets.map(_.name).toArray)
-          .dropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
-          .style(_.textColor(BLACK)
-            .textSize(18 dip)
-            .maxLines(1)
-            .padding(20 dip, 5 dip, 20 dip, 4 dip)
-          ))
+          .adapter(
+            SArrayAdapter(selectedCourse.sheets.map(_.name).toArray)
+              .dropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
+              .style(_.textColor(BLACK)
+                .textSize(18 dip)
+                .maxLines(1)
+                .padding(20 dip, 2 dip, 20 dip, 3 dip)
+                .gravity(Gravity.CENTER_HORIZONTAL)
+              ))
           .selection(sheetId)
           .onItemSelected((_: AdapterView[_], _: View, pos: Int, _: Long) => {
             if (sheetId != pos) {
@@ -147,7 +149,7 @@ class TableFragment extends Fragment with RichFragment {
 
             // new column adder button
             addColBtn = new SImageButton(R.drawable.add_new_col) {
-              padding(15 dip, 4 dip, 15 dip, 4 dip)
+              padding(15 dip, 2 dip, 15 dip, 2 dip)
 
               override def onMeasure(w: Int, h: Int) = {
                 super.onMeasure(w, h)
