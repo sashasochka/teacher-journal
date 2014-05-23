@@ -169,6 +169,9 @@ class TableFragment extends Fragment with RichFragment {
                   addCellToRow(RandData.randomRecord, rowIndex)
                   layout += emptyView
                 }
+
+                // post is used to schedule scrolling after Android adds column to its layout
+                cellsHScrollView.post(cellsHScrollView.fullScroll(View.FOCUS_RIGHT))
               }
             }
             this += addColBtn
