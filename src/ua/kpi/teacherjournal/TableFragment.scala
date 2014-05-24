@@ -43,7 +43,7 @@ class TableFragment extends Fragment with RichFragment {
   val rowLayouts = ArrayBuffer[STableRow]()
   val cellViews = ArrayBuffer[ArrayBuffer[STextView]]()
   var addColBtn: SImageButton = _
-  var selectedCell: Option[(STextView, Record)] = None
+  var selectedCell: Option[(STextView, Option[Record])] = None
 
   def createHeader(index: Int, text: String) = {
     new STextView(text) {
@@ -54,20 +54,20 @@ class TableFragment extends Fragment with RichFragment {
     }
   }
 
-  def addCellToRow(record: Record, rowIndex: Int) = {
-    val layout = rowLayouts(rowIndex)
-    def cellBgColor(record: Record) = record match {
-      case AbsentRecord => absentBackgroundColor
+  def addCellToRow(recordOption: Option[Record], rowIndex: Int) = {
+    val rowLayout = rowLayouts(rowIndex)
+    def cellBgColor(record: Option[Record]) = record match {
+      case Some(AbsentRecord) => absentBackgroundColor
       case _ => cellColor
     }
 
-    val cellText = record match {
-      case GradeRecord(grade) => grade.toString
+    val cellText = recordOption match {
+      case Some(GradeRecord(grade)) => grade.toString
       case _ => ""
     }
 
-    val cellView = STextView(cellText)(ctx, new layout.LayoutParams(_))
-      .backgroundColor(cellBgColor(record))
+    val cellView = STextView(cellText)(ctx, new rowLayout.LayoutParams(_))
+      .backgroundColor(cellBgColor(recordOption))
       .gravity(Gravity.CENTER_HORIZONTAL)
 
     cellView.onClick {
@@ -75,11 +75,17 @@ class TableFragment extends Fragment with RichFragment {
         case Some((cell, rec)) => cell.backgroundColor(cellBgColor(rec))
         case None =>
       }
-      val d = new GradientDrawable()
-      d.setStroke(2 dip, rgb(0x4d, 0x93, 0xc3))
-      d.setColor(cellBgColor(record))
-      cellView.backgroundDrawable = d
-      selectedCell = Some(cellView, record)
+
+      recordOption match {
+        case Some(record) =>
+          val d = new GradientDrawable()
+          d.setStroke(2 dip, rgb(0x4d, 0x93, 0xc3))
+          d.setColor(cellBgColor(recordOption))
+          cellView.backgroundDrawable = d
+          selectedCell = Some(cellView, recordOption)
+        case None =>
+          selectedCell = None
+      }
     }
   }
 
@@ -166,7 +172,7 @@ class TableFragment extends Fragment with RichFragment {
                   val cols = layout.getChildCount
                   val emptyView = layout.getChildAt(cols - 1)
                   layout.removeViewAt(cols - 1)
-                  addCellToRow(RandData.randomRecord, rowIndex)
+                  addCellToRow(Some(RandData.randomRecord), rowIndex)
                   layout += emptyView
                 }
 
@@ -211,8 +217,8 @@ class TableFragment extends Fragment with RichFragment {
                 val rowView = new STableRow {
                   rowLayouts += this
 
-                  for (record <- student.records :+ EmptyRecord) {
-                    addCellToRow(record, studentIndex)
+                  for (recordOption <- student.records.map(Some(_)) :+ None) {
+                    addCellToRow(recordOption, studentIndex)
                   }
                 }
                 this += rowView
