@@ -1,10 +1,14 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="app_name">Журнал</string>
+
+    <!-- Main menu-->
     <string name="action_callover">ПЕРЕКЛИЧКА</string>
     <string name="action_share">ПОДІЛИТИСЯ</string>
-    <string name="last_sync">Остання синхронізація</string>
-    <string name="until_class_end">До кінця пари залишилося</string>
     <string name="action_settings">Налаштування</string>
     <string name="action_exit">Вихід</string>
+
+    <!-- Different -->
+    <string name="last_sync">Остання синхронізація</string>
+    <string name="until_class_end">До кінця пари залишилося</string>
 </resources>
