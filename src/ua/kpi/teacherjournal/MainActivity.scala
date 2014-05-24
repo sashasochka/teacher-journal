@@ -45,6 +45,10 @@ class MainActivity extends SActivity { self =>
     CallOverDialogFragment.show(getFragmentManager, RandData.selectedSheet.students.map(_.name))
   }
 
+  def exit(item: MenuItem = null) = {
+    finish()
+  }
+
   onCreate {
     setupActionBar()
     setContentView(R.layout.main_activity)

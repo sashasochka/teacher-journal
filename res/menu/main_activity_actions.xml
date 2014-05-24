@@ -1,17 +1,15 @@
 <?xml version="1.0" encoding="utf-8"?>
 <menu xmlns:android="http://schemas.android.com/apk/res/android" >
-    <item android:id="@+id/tmp_id"
-        android:title="@string/action_callover"
+    <item android:title="@string/action_callover"
         android:onClick="startCallOver"
         android:showAsAction="ifRoom" />
     <item android:id="@+id/action_share"
         android:title="@string/action_share"
         android:actionProviderClass="android.widget.ShareActionProvider"
         android:showAsAction="ifRoom" />
-    <item android:id="@+id/action_settings"
-        android:title="@string/action_settings"
+    <item android:title="@string/action_settings"
         android:showAsAction="never" />
-    <item android:id="@+id/action_exit"
-        android:title="@string/action_exit"
+    <item android:title="@string/action_exit"
+        android:onClick="exit"
         android:showAsAction="never" />
 </menu>
