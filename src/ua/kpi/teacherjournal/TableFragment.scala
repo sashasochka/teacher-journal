@@ -6,11 +6,12 @@ import android.graphics.drawable.GradientDrawable
 import android.graphics.Color._
 import android.os.Bundle
 import android.view._
-import android.widget.AdapterView
+import android.widget.{PopupMenu, AdapterView}
 import org.scaloid.common._
 import scala.collection.mutable.ArrayBuffer
 import scala.language.postfixOps
 import ua.kpi.teacherjournal.Journal._
+import scala.util.Random
 
 object TableFragment {
   val headerColor = rgb(0xe7, 0xe7, 0xe7)
@@ -19,8 +20,18 @@ object TableFragment {
   val bgColor = rgb(0xcc, 0xcc, 0xcc)
   val absentBackgroundColor = rgb(0xFF, 0xE5, 0xE6)
 
+  case class Coord(x: Int, y: Int) {
+    require(x >= 0)
+    require(y >= 0)
+  }
+
   def marginHorizontal(implicit ctx: Context) = 1 dip
   def marginBottom(implicit ctx: Context) = 1 dip
+
+  def cellBgColor(record: Option[Record]) = record match {
+    case Some(AbsentRecord) => absentBackgroundColor
+    case _ => cellColor
+  }
 
   def update(fragmentManager: FragmentManager, selectedSheet: Sheet) =
     fragmentManager.beginTransaction()
@@ -43,7 +54,7 @@ class TableFragment extends Fragment with RichFragment {
   val rowLayouts = ArrayBuffer[STableRow]()
   val cellViews = ArrayBuffer[ArrayBuffer[STextView]]()
   var addColBtn: SImageButton = _
-  var selectedCell: Option[(STextView, Option[Record])] = None
+  var selectedCell: Option[(STextView, Record)] = None
 
   def createHeader(index: Int, text: String) = {
     new STextView(text) {
@@ -54,39 +65,86 @@ class TableFragment extends Fragment with RichFragment {
     }
   }
 
-  def addCellToRow(recordOption: Option[Record], rowIndex: Int) = {
-    val rowLayout = rowLayouts(rowIndex)
-    def cellBgColor(record: Option[Record]) = record match {
-      case Some(AbsentRecord) => absentBackgroundColor
-      case _ => cellColor
+  def unselectCell() = {
+    selectedCell match {
+      case Some((cell, rec)) =>
+        cell.backgroundColor(cellBgColor(Some(rec)))
+        selectedCell = None
+      case None =>
     }
+  }
 
+  def createCell(recordOption: Option[Record], coord: Coord): STextView = {
+    val row = rowLayouts(coord.y)
     val cellText = recordOption match {
       case Some(GradeRecord(grade)) => grade.toString
       case _ => ""
     }
 
-    val cellView = STextView(cellText)(ctx, new rowLayout.LayoutParams(_))
+    val cell = new STextView(cellText)
       .backgroundColor(cellBgColor(recordOption))
       .gravity(Gravity.CENTER_HORIZONTAL)
+      .textSize(18 dip)
+      .textColor(BLACK)
+      .maxLines(1)
+      .padding(20 dip, 10 dip, 20 dip, 10 dip)
+      .<<(new row.LayoutParams(_))
+      .marginRight(marginHorizontal)
+      .marginBottom(marginBottom)
+      .>>
 
-    cellView.onClick {
-      selectedCell match {
-        case Some((cell, rec)) => cell.backgroundColor(cellBgColor(rec))
-        case None =>
-      }
+    def select(record: Record) = {
+      val d = new GradientDrawable()
+      d.setStroke(2 dip, rgb(0x4d, 0x93, 0xc3))
+      d.setColor(cellBgColor(recordOption))
+      cell.backgroundDrawable = d
+      selectedCell = Some((cell, record))
+    }
 
+    def showPopup(record: Record) {
+      val popup = new PopupMenu(ctx, cell)
+      popup.getMenuInflater.inflate(R.menu.cell_actions, popup.getMenu)
+      val menu = popup.getMenu
+      val gradeItem = menu.findItem(R.id.grade_menu_item)
+      val absentItem = menu.findItem(R.id.absent_menu_item).setVisible(record != AbsentRecord)
+      val presentItem = menu.findItem(R.id.present_menu_item).setVisible(record == AbsentRecord)
+      val clearItem = menu.findItem(R.id.clear_menu_item).setVisible(record != EmptyRecord && record != AbsentRecord)
+
+      popup.setOnMenuItemClickListener(new PopupMenu.OnMenuItemClickListener {
+        def onMenuItemClick(item: MenuItem) = {
+          val newRecord = item match {
+            case `gradeItem` => Some(GradeRecord(Random.nextInt(10)))
+            case `absentItem` => Some(AbsentRecord)
+            case `presentItem` => Some(EmptyRecord)
+            case `clearItem` => Some(EmptyRecord)
+          }
+          row.addView(createCell(newRecord, coord), coord.x)
+          row.removeView(cell)
+          true
+        }
+      })
+      popup.show()
+    }
+
+    cell.onClick {
+      unselectCell()
       recordOption match {
-        case Some(record) =>
-          val d = new GradientDrawable()
-          d.setStroke(2 dip, rgb(0x4d, 0x93, 0xc3))
-          d.setColor(cellBgColor(recordOption))
-          cellView.backgroundDrawable = d
-          selectedCell = Some(cellView, recordOption)
+        case Some(record) => select(record)
         case None =>
-          selectedCell = None
       }
     }
+
+    cell.onLongClick {
+      unselectCell()
+      recordOption match {
+        case Some(record) =>
+          select(record)
+          showPopup(record)
+        case None =>
+      }
+      true
+    }
+    cell
   }
 
   def setColumnWidth(index: Int, width: Int) = {
@@ -168,11 +226,11 @@ class TableFragment extends Fragment with RichFragment {
                 headerLayout += createHeader(headerLayout.childCount, RandData.randomColumn)
                 headerLayout += addColBtn
 
-                for ((layout, rowIndex) <- rowLayouts zipWithIndex) {
+                for ((layout, y) <- rowLayouts.zipWithIndex) {
                   val cols = layout.getChildCount
                   val emptyView = layout.getChildAt(cols - 1)
                   layout.removeViewAt(cols - 1)
-                  addCellToRow(Some(RandData.randomRecord), rowIndex)
+                  layout += createCell(Some(RandData.randomRecord), Coord(cols, y))
                   layout += emptyView
                 }
 
@@ -218,7 +276,7 @@ class TableFragment extends Fragment with RichFragment {
                   rowLayouts += this
 
                   for (recordOption <- student.records.map(Some(_)) :+ None) {
-                    addCellToRow(recordOption, studentIndex)
+                    this += createCell(recordOption, Coord(getChildCount, studentIndex))
                   }
                 }
                 this += rowView

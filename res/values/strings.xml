@@ -11,4 +11,10 @@
     <!-- Different -->
     <string name="last_sync">Остання синхронізація</string>
     <string name="until_class_end">До кінця пари залишилося</string>
+
+    <!-- Cell context menu -->
+    <string name="put_grade">Поставити оцінку</string>
+    <string name="absent">Відсутній</string>
+    <string name="clear_cell">Очистити</string>
+    <string name="present">Присутній</string>
 </resources>
