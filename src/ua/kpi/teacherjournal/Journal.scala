@@ -22,5 +22,5 @@ object Journal {
       HourMinute(diff / 60, diff % 60)
     }
   }
-  case class ClassTimePeriod(start: HourMinute, end: HourMinute)
+  case class TimePeriod(start: HourMinute, end: HourMinute)
 }

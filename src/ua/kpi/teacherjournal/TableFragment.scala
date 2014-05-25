@@ -27,6 +27,7 @@ object TableFragment {
 
   def marginHorizontal(implicit ctx: Context) = 1 dip
   def marginBottom(implicit ctx: Context) = 1 dip
+  def cellPaddingH(implicit ctx: Context) = 20 dip
 
   def cellBgColor(record: Option[Record]) = record match {
     case Some(AbsentRecord) => absentBackgroundColor
@@ -89,7 +90,7 @@ class TableFragment extends Fragment with RichFragment {
       .textSize(18 dip)
       .textColor(BLACK)
       .maxLines(1)
-      .padding(20 dip, 10 dip, 20 dip, 10 dip)
+      .padding(cellPaddingH, 10 dip, cellPaddingH, 10 dip)
       .<<(new row.LayoutParams(_))
       .marginRight(marginHorizontal)
       .marginBottom(marginBottom)
@@ -171,7 +172,7 @@ class TableFragment extends Fragment with RichFragment {
         case t: STextView => t.textColor(BLACK)
           .textSize(18 dip)
           .maxLines(1)
-          .padding(20 dip, 10 dip, 20 dip, 10 dip)
+          .padding(cellPaddingH, 10 dip, cellPaddingH, 10 dip)
       }
 
       this += new SLinearLayout {
@@ -186,7 +187,7 @@ class TableFragment extends Fragment with RichFragment {
               .style(_.textColor(BLACK)
                 .textSize(18 dip)
                 .maxLines(1)
-                .padding(20 dip, 2 dip, 20 dip, 3 dip)
+                .padding(cellPaddingH, 2 dip, cellPaddingH, 3 dip)
                 .gravity(Gravity.CENTER_HORIZONTAL)
               ))
           .selection(sheetId)
@@ -216,7 +217,7 @@ class TableFragment extends Fragment with RichFragment {
 
             // new column adder button
             addColBtn = new SImageButton(R.drawable.add_new_col) {
-              padding(15 dip, 2 dip, 15 dip, 2 dip)
+              padding(cellPaddingH, 2 dip, cellPaddingH, 2 dip)
 
               override def onMeasure(w: Int, h: Int) = {
                 super.onMeasure(w, h)
@@ -225,7 +226,7 @@ class TableFragment extends Fragment with RichFragment {
 
               onClick {
                 headerLayout.removeView(addColBtn)
-                headerLayout += createHeader(headerLayout.childCount, RandData.randomColumn)
+                headerLayout += createHeader(headerLayout.childCount, RandData.randomColumnName)
                 headerLayout += addColBtn
 
                 for ((layout, y) <- rowLayouts.zipWithIndex) {

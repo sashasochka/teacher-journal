@@ -19,11 +19,11 @@ object RandData {
     "Калапуша", "Поляков", "Талашко", "Борисов")
   private val courseNames = Vector("Об’єктно-орієнтоване програмування", "Основи програмування", "Математичний аналіз")
   val classTimes = List(
-    ClassTimePeriod(HourMinute(8, 30), HourMinute(10, 5)),
-    ClassTimePeriod(HourMinute(10, 25), HourMinute(12, 0)),
-    ClassTimePeriod(HourMinute(12, 20), HourMinute(13, 55)),
-    ClassTimePeriod(HourMinute(14, 15), HourMinute(15, 50)),
-    ClassTimePeriod(HourMinute(16, 10), HourMinute(17, 45))
+    TimePeriod(HourMinute(8, 30), HourMinute(10, 5)),
+    TimePeriod(HourMinute(10, 25), HourMinute(12, 0)),
+    TimePeriod(HourMinute(12, 20), HourMinute(13, 55)),
+    TimePeriod(HourMinute(14, 15), HourMinute(15, 50)),
+    TimePeriod(HourMinute(16, 10), HourMinute(17, 45))
   )
 
   val courses = for (courseName <- courseNames)
@@ -38,8 +38,8 @@ object RandData {
     curTime.setToNow()
     val curHourMinute = HourMinute(curTime.hour, curTime.minute)
     // val curHourMinute = HourMinute(12, 59 + Random.nextInt(10)) // for debugging
-    for (curClass <- classTimes.find(c => c.start < curHourMinute && curHourMinute < c.end))
-      yield curClass.end - curHourMinute
+    classTimes.find(c => c.start < curHourMinute && curHourMinute < c.end)
+      .map(_.end - curHourMinute)
   }
 
   def randomRecord =
@@ -61,7 +61,7 @@ object RandData {
     (for (groupName <- randomSubset(groupNames)) yield {
       val LabRegex = raw"Lab (\d)".r
       val DateRegex = raw"(\d\d)\.(\d\d)".r
-      val columns = List.fill(Random.nextInt(15) + 7)(randomColumn).distinct.sortBy {
+      val columns = List.fill(Random.nextInt(15) + 7)(randomColumnName).distinct.sortBy {
         case LabRegex(labIndex) => labIndex.toInt + 10000
         case DateRegex(day, month) => month.toInt * 31 + day.toInt
         case _ => 0
@@ -72,7 +72,7 @@ object RandData {
       Sheet(groupName, columns, studentsWithBoss)
     }).sortBy(_.name)
 
-  def randomColumn =
+  def randomColumnName =
     if (Random.nextBoolean()) f"${Random.nextInt(30) + 1}%02d.${Random.nextInt(12) + 1}%02d"
     else s"Lab ${Random.nextInt(10)}"
 }
