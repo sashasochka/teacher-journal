@@ -42,9 +42,6 @@ object RandData {
       yield curClass.end - curHourMinute
   }
 
-  def randomTime =
-    "%02d:%02d".format(Random.nextInt(24), Random.nextInt(60))
-
   def randomRecord =
     if (Random.nextBoolean()) GradeRecord(Random.nextInt(10))
     else if (Random.nextBoolean()) AbsentRecord

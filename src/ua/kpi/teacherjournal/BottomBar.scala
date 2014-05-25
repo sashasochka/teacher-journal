@@ -74,7 +74,7 @@ class BottomBar extends Fragment with RichFragment {
         .alignParentRight
         .>>
 
-      val lastSync = STextView(s"${R.string.last_sync.r2String}: $randomTime")
+      val lastSync = STextView(s"${R.string.last_sync.r2String}: 12:34")
         .textSize(14 dip)
         .gravity(Gravity.CENTER_VERTICAL)
         .textColor(GRAY)
