@@ -233,7 +233,7 @@ class TableFragment extends Fragment with RichFragment {
                   val cols = layout.getChildCount
                   val emptyView = layout.getChildAt(cols - 1)
                   layout.removeViewAt(cols - 1)
-                  layout += createCell(Some(RandData.randomRecord), Coord(cols, y))
+                  layout += createCell(Some(EmptyRecord), Coord(cols, y))
                   layout += emptyView
                 }
 
