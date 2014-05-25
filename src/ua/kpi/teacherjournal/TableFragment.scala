@@ -58,6 +58,8 @@ class TableFragment extends Fragment with RichFragment {
 
   def createHeader(index: Int, text: String) = {
     new STextView(text) {
+      gravity = Gravity.CENTER_HORIZONTAL
+      minimumWidth = 80 dip
       override def onMeasure(w: Int, h: Int) = {
         super.onMeasure(w, h)
         setColumnWidth(index, getMeasuredWidth)
