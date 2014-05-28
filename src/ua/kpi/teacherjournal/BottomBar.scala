@@ -22,7 +22,7 @@ object BottomBar {
 class BottomBar extends Fragment with RichFragment {
   def untilClassEndText(implicit ctx: Context) = timeUntilClassEnd match {
       case Some(HourMinute(hours, minutes)) =>
-        R.string.until_class_end.r2String + " %01d:%02d".format(hours, minutes)
+        R.string.until_class_end.r2String + f" $hours%01d:$minutes%02d"
       case None => ""
     }
 

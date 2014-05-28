@@ -279,19 +279,20 @@ class TableFragment extends Fragment with RichFragment {
 
               override def onMeasure(w: Int, h: Int) = {
                 super.onMeasure(w, h)
-                setColumnWidth(rowLayouts.head.getChildCount - 1, getMeasuredWidth)
+                setColumnWidth(rowLayouts.head.getChildCount - 1, measuredWidth)
               }
 
               onClick {
                 headerLayout.removeView(addColBtn)
-                headerLayout += createHeader(headerLayout.childCount, RandData.randomColumnName)
+                // todo Add possibility to change name instead of hard-coded
+                headerLayout += createHeader(headerLayout.childCount, "New column")
                 headerLayout += addColBtn
 
                 for ((layout, y) <- rowLayouts.zipWithIndex) {
                   val cols = layout.getChildCount
                   val emptyView = layout.getChildAt(cols - 1)
                   layout.removeViewAt(cols - 1)
-                  layout += createCell(Some(EmptyRecord), Coord(cols, y))
+                  layout += createCell(Some(EmptyRecord), Coord(x = cols, y = y))
                   layout += emptyView
                 }
 
