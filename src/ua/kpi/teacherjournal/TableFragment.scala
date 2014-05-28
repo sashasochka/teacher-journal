@@ -5,13 +5,14 @@ import android.content.Context
 import android.graphics.drawable.GradientDrawable
 import android.graphics.Color._
 import android.os.Bundle
+import android.text.InputType._
 import android.view._
-import android.widget.{PopupMenu, AdapterView}
+import android.widget.{TextView, PopupMenu, AdapterView}
 import org.scaloid.common._
 import scala.collection.mutable.ArrayBuffer
 import scala.language.postfixOps
 import ua.kpi.teacherjournal.Journal._
-import scala.util.Random
+import android.text.InputFilter
 
 object TableFragment {
   val headerColor = rgb(0xe7, 0xe7, 0xe7)
@@ -55,12 +56,13 @@ class TableFragment extends Fragment with RichFragment {
   val rowLayouts = ArrayBuffer[STableRow]()
   val cellViews = ArrayBuffer[ArrayBuffer[STextView]]()
   var addColBtn: SImageButton = _
-  var selectedCell: Option[(STextView, Record)] = None
+  var selectedCellOption: Option[(TextView, Record)] = None
+  var gradeEditOption: Option[(SEditText, Coord)] = None
 
   def createHeader(index: Int, text: String) = {
     new STextView(text) {
       gravity = Gravity.CENTER_HORIZONTAL
-      minimumWidth = 80 dip
+      minimumWidth = 90 dip
       override def onMeasure(w: Int, h: Int) = {
         super.onMeasure(w, h)
         setColumnWidth(index, getMeasuredWidth)
@@ -68,11 +70,19 @@ class TableFragment extends Fragment with RichFragment {
     }
   }
 
+  def selectCell(cell: TextView, record: Record) = {
+    val d = new GradientDrawable()
+    d.setStroke(2 dip, rgb(0x4d, 0x93, 0xc3))
+    d.setColor(cellBgColor(Some(record)))
+    cell.backgroundDrawable = d
+    selectedCellOption = Some((cell, record))
+  }
+
   def unselectCell() = {
-    selectedCell match {
-      case Some((cell, rec)) =>
-        cell.backgroundColor(cellBgColor(Some(rec)))
-        selectedCell = None
+    selectedCellOption match {
+      case Some((cell, record)) =>
+        cell.backgroundColor(cellBgColor(Some(record)))
+        selectedCellOption = None
       case None =>
     }
   }
@@ -80,7 +90,9 @@ class TableFragment extends Fragment with RichFragment {
   def createCell(recordOption: Option[Record], coord: Coord): STextView = {
     val row = rowLayouts(coord.y)
     val cellText = recordOption match {
-      case Some(GradeRecord(grade)) => grade.toString
+      case Some(GradeRecord(grade)) =>
+        if (grade == grade.toInt.toDouble) grade.toInt.toString
+        else grade.toString
       case _ => ""
     }
 
@@ -96,12 +108,18 @@ class TableFragment extends Fragment with RichFragment {
       .marginBottom(marginBottom)
       .>>
 
-    def select(record: Record) = {
-      val d = new GradientDrawable()
-      d.setStroke(2 dip, rgb(0x4d, 0x93, 0xc3))
-      d.setColor(cellBgColor(recordOption))
-      cell.backgroundDrawable = d
-      selectedCell = Some((cell, record))
+    def endGradeEditing() = {
+      gradeEditOption match {
+        case None =>
+        case Some((gradeEdit, gradeCoord)) =>
+          val editStr = gradeEdit.text.toString
+          val row = rowLayouts(gradeCoord.y)
+          val newRecord = if (editStr.isEmpty) EmptyRecord else GradeRecord(editStr.toDouble)
+          inputMethodManager.hideSoftInputFromWindow(gradeEdit.windowToken, 0)
+          row.addView(createCell(Some(newRecord), gradeCoord), gradeCoord.x)
+          row.removeView(gradeEdit)
+      }
+      gradeEditOption = None
     }
 
     def showPopup(record: Record) {
@@ -111,17 +129,55 @@ class TableFragment extends Fragment with RichFragment {
       val gradeItem = menu.findItem(R.id.grade_menu_item)
       val absentItem = menu.findItem(R.id.absent_menu_item).setVisible(record != AbsentRecord)
       val presentItem = menu.findItem(R.id.present_menu_item).setVisible(record == AbsentRecord)
+
       val clearItem = menu.findItem(R.id.clear_menu_item).setVisible(record != EmptyRecord && record != AbsentRecord)
 
       popup.setOnMenuItemClickListener(new PopupMenu.OnMenuItemClickListener {
         def onMenuItemClick(item: MenuItem) = {
-          val newRecord = item match {
-            case `gradeItem` => Some(GradeRecord(Random.nextInt(10)))
-            case `absentItem` => Some(AbsentRecord)
-            case `presentItem` => Some(EmptyRecord)
-            case `clearItem` => Some(EmptyRecord)
+          val newView = item match {
+            case `gradeItem` =>
+              val gradeEdit = new SEditText(cellText)
+                .padding(cellPaddingH, 10 dip, cellPaddingH, 10 dip)
+                .textSize(18 dip)
+                .maxLines(1)
+                .filters(Array[InputFilter](new InputFilter.LengthFilter(5)))
+                .backgroundColor(cellColor)
+                .textColor(BLACK)
+                .gravity(Gravity.CENTER_HORIZONTAL)
+                // fixme results in the following bug:
+                // when there are many columns and horizontal scroll view is used
+                // Android automatically full-scrolls to the right after focusing
+                // on this TextEdit
+                .inputType(TYPE_CLASS_NUMBER | TYPE_NUMBER_FLAG_DECIMAL | TYPE_NUMBER_FLAG_SIGNED)
+                .<<(new row.LayoutParams(_))
+                .marginRight(marginHorizontal)
+                .marginBottom(marginBottom)
+                .>>
+
+              gradeEditOption = Some((gradeEdit, coord))
+
+              gradeEdit.onFocusChange((v: View, hasFocus: Boolean) => {
+                if (hasFocus) {
+                  gradeEdit.post(inputMethodManager.showSoftInput(gradeEdit, 0))
+                  gradeEdit.selectAll()
+                }
+              })
+
+              gradeEdit.onKey((v: View, keyCode: Int, event: KeyEvent) => {
+                if ((event.getAction == KeyEvent.ACTION_DOWN) && (keyCode == KeyEvent.KEYCODE_ENTER)) {
+                  endGradeEditing()
+                  true
+                } else false
+              })
+
+              selectCell(gradeEdit, EmptyRecord)
+              gradeEdit.post(gradeEdit.requestFocus())
+              gradeEdit
+            case `absentItem` => createCell(Some(AbsentRecord), coord)
+            case `presentItem` => createCell(Some(EmptyRecord), coord)
+            case `clearItem` => createCell(Some(EmptyRecord), coord)
           }
-          row.addView(createCell(newRecord, coord), coord.x)
+          row.addView(newView, coord.x)
           row.removeView(cell)
           true
         }
@@ -130,18 +186,20 @@ class TableFragment extends Fragment with RichFragment {
     }
 
     cell.onClick {
+      endGradeEditing()
       unselectCell()
       recordOption match {
-        case Some(record) => select(record)
+        case Some(record) => selectCell(cell, record)
         case None =>
       }
     }
 
     cell.onLongClick {
+      endGradeEditing()
       unselectCell()
       recordOption match {
         case Some(record) =>
-          select(record)
+          selectCell(cell, record)
           showPopup(record)
         case None =>
       }

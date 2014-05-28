@@ -2,7 +2,7 @@ package ua.kpi.teacherjournal
 
 object Journal {
   type Column = String
-  type Grade = Int
+  type Grade = Double
 
   sealed abstract class Record
   case class GradeRecord(grade: Grade) extends Record

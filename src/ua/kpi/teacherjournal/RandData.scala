@@ -43,7 +43,7 @@ object RandData {
   }
 
   def randomRecord =
-    if (Random.nextBoolean()) GradeRecord(Random.nextInt(10))
+    if (Random.nextBoolean()) GradeRecord(Random.nextInt(10).toDouble)
     else if (Random.nextBoolean()) AbsentRecord
     else EmptyRecord
 
