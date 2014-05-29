@@ -4,6 +4,7 @@ import scala.collection.TraversableLike
 import scala.collection.generic.CanBuildFrom
 import scala.language.higherKinds
 import scala.util.Random
+import scala.collection.mutable.ArrayBuffer
 
 object RandData {
   import Journal._
@@ -27,7 +28,7 @@ object RandData {
     studentSurnames(Random.nextInt(studentSurnames.size)) + " " + studentNames(Random.nextInt(studentNames.size))
 
   def randomStudentSeq(nStudents: Int, nColumns: Int) =
-    Vector.fill(nStudents)(Student(randomStudentName, Vector.fill(nColumns)(randomRecord))).sortBy(_.name)
+    Array.fill(nStudents)(Student(randomStudentName, ArrayBuffer.fill(nColumns)(randomRecord))).sortBy(_.name)
 
   private def randomSubset[A, CC[X] <: TraversableLike[X, CC[X]]](set: CC[A])
       (implicit bf: CanBuildFrom[CC[A], A, CC[A]]): CC[A] =
@@ -39,15 +40,15 @@ object RandData {
     val LabRegex = raw"Lab (\d)".r
     val DateRegex = raw"(\d\d)\.(\d\d)".r
     (for (groupName <- randomSubset(groupNames)) yield {
-      val columns = List.fill(nCols)(randomColumnName).distinct.sortBy {
+      val columns = ArrayBuffer.fill(nCols)(randomColumnName).distinct.sortBy {
         case LabRegex(labIndex) => labIndex.toInt + 10000
         case DateRegex(day, month) => month.toInt * 31 + day.toInt
         case _ => 0
       }
       val students = randomStudentSeq(nRows, columns.size)
       val bossIndex = Random.nextInt(students.size)
-      val studentsWithBoss = students.updated(bossIndex, students(bossIndex).copy(isBoss = true))
-      Sheet(groupName, columns, studentsWithBoss)
+      students(bossIndex) = students(bossIndex).copy(isBoss = true)
+      Sheet(groupName, columns, students)
     }).sortBy(_.name)
   }
 

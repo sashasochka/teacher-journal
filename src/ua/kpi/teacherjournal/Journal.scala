@@ -1,5 +1,7 @@
 package ua.kpi.teacherjournal
 
+import scala.collection.mutable
+
 object Journal {
   type Column = String
   type Grade = Double
@@ -9,8 +11,9 @@ object Journal {
   case object AbsentRecord extends Record
   case object EmptyRecord extends Record
 
-  case class Student(name: String, records: Seq[Record], isBoss: Boolean = false)
-  case class Sheet(name: String, columns: Seq[Column], students: Seq[Student]) {
+  case class Student(name: String, records: mutable.ArrayBuffer[Record], isBoss: Boolean = false)
+
+  case class Sheet(name: String, columns: mutable.ArrayBuffer[Column], students: mutable.Seq[Student]) {
     require(students.forall(_.records.size == columns.size))
   }
   case class Course(name: String, sheets: Seq[Sheet])

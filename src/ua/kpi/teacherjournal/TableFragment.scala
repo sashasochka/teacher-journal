@@ -62,7 +62,17 @@ class TableFragment extends Fragment with RichFragment {
   def createHeader(index: Int, text: String) = {
     new STextView(text) {
       gravity = Gravity.CENTER_HORIZONTAL
-      minimumWidth = 90 dip
+      backgroundColor = headerColor
+      textSize = 18.dip
+      textColor = BLACK
+      maxLines = 1
+      padding(cellPaddingH, 10 dip, cellPaddingH, 10 dip)
+      minimumWidth = 90.dip
+      val hl = headerLayout
+      <<(new hl.LayoutParams(_)).fill
+      .marginRight(marginHorizontal)
+      .marginBottom(marginBottom)
+      .>>
       override def onMeasure(w: Int, h: Int) = {
         super.onMeasure(w, h)
         setColumnWidth(index, getMeasuredWidth)
@@ -115,6 +125,7 @@ class TableFragment extends Fragment with RichFragment {
           val editStr = gradeEdit.text.toString
           val row = rowLayouts(gradeCoord.y)
           val newRecord = if (editStr.isEmpty) EmptyRecord else GradeRecord(editStr.toDouble)
+          selectedSheet.students(gradeCoord.y).records(gradeCoord.x) = newRecord
           inputMethodManager.hideSoftInputFromWindow(gradeEdit.windowToken, 0)
           row.addView(createCell(Some(newRecord), gradeCoord), gradeCoord.x)
           row.removeView(gradeEdit)
@@ -173,9 +184,15 @@ class TableFragment extends Fragment with RichFragment {
               selectCell(gradeEdit, EmptyRecord)
               gradeEdit.post(gradeEdit.requestFocus())
               gradeEdit
-            case `absentItem` => createCell(Some(AbsentRecord), coord)
-            case `presentItem` => createCell(Some(EmptyRecord), coord)
-            case `clearItem` => createCell(Some(EmptyRecord), coord)
+            case `absentItem` =>
+              selectedSheet.students(coord.y).records(coord.x) = AbsentRecord
+              createCell(Some(AbsentRecord), coord)
+            case `presentItem` =>
+              selectedSheet.students(coord.y).records(coord.x) = EmptyRecord
+              createCell(Some(EmptyRecord), coord)
+            case `clearItem` =>
+              selectedSheet.students(coord.y).records(coord.x) = EmptyRecord
+              createCell(Some(EmptyRecord), coord)
           }
           row.addView(newView, coord.x)
           row.removeView(cell)
@@ -226,12 +243,6 @@ class TableFragment extends Fragment with RichFragment {
     new SVerticalLayout {
       <<.fill
       backgroundColor = bgColor
-      style {
-        case t: STextView => t.textColor(BLACK)
-          .textSize(18 dip)
-          .maxLines(1)
-          .padding(cellPaddingH, 10 dip, cellPaddingH, 10 dip)
-      }
 
       this += new SLinearLayout {
         groupSpinner = SSpinner()
@@ -245,7 +256,7 @@ class TableFragment extends Fragment with RichFragment {
               .style(_.textColor(BLACK)
                 .textSize(18 dip)
                 .maxLines(1)
-                .padding(cellPaddingH, 2 dip, cellPaddingH, 3 dip)
+                .padding(cellPaddingH, 2 dip, cellPaddingH, 2 dip)
                 .gravity(Gravity.CENTER_HORIZONTAL)
               ))
           .selection(sheetId)
@@ -258,16 +269,8 @@ class TableFragment extends Fragment with RichFragment {
 
         headersScrollView = new SHorizontalScrollViewSynchronized(cellsHScrollView, disableScrollBar = true) {
           <<.marginLeft(marginHorizontal).>>
-          headerLayout = new SLinearLayout {
-            style {
-              case v: TraitView[_] => v
-                .backgroundColor(headerColor)
-                .<<.fill
-                .marginRight(marginHorizontal)
-                .marginBottom(marginBottom)
-                .>>
-            }
-
+          new SLinearLayout {
+            headerLayout = this
             // Headers (e.g. dates)
             for ((column, colIndex) <- sheet.columns.zipWithIndex) {
               this += createHeader(colIndex, column)
@@ -276,24 +279,28 @@ class TableFragment extends Fragment with RichFragment {
             // new column adder button
             addColBtn = new SImageButton(R.drawable.add_new_col) {
               padding(cellPaddingH, 2 dip, cellPaddingH, 2 dip)
-
+              backgroundColor = headerColor
+              <<
+                .marginRight(marginHorizontal)
+                .marginBottom(marginBottom)
+                .>>
               override def onMeasure(w: Int, h: Int) = {
                 super.onMeasure(w, h)
                 setColumnWidth(rowLayouts.head.getChildCount - 1, measuredWidth)
               }
 
               onClick {
-                headerLayout.removeView(addColBtn)
-                // todo Add possibility to change name instead of hard-coded
-                headerLayout += createHeader(headerLayout.childCount, "New column")
-                headerLayout += addColBtn
+                // todo Add possibility to change column name (instead of hard-coded name)
+                val newColumnName = "New column"
+                selectedSheet.columns += newColumnName
+                for (student <- selectedSheet.students)
+                  student.records += EmptyRecord
+
+                val x = headerLayout.childCount - 1
+                headerLayout.addView(createHeader(x, newColumnName), x)
 
                 for ((layout, y) <- rowLayouts.zipWithIndex) {
-                  val cols = layout.getChildCount
-                  val emptyView = layout.getChildAt(cols - 1)
-                  layout.removeViewAt(cols - 1)
-                  layout += createCell(Some(EmptyRecord), Coord(x = cols, y = y))
-                  layout += emptyView
+                  layout.addView(createCell(Some(EmptyRecord), Coord(x, y)), x)
                 }
 
                 // post is used to schedule scrolling after Android adds column to its layout
@@ -322,6 +329,10 @@ class TableFragment extends Fragment with RichFragment {
             for ((student, studentIndex) <- sheet.students.zipWithIndex) {
               val tv = STextView(s"${studentIndex + 1}. ${student.name}")
                 .backgroundColor(headerColor)
+                .textColor(BLACK)
+                .textSize(18 dip)
+                .maxLines(1)
+                .padding(cellPaddingH, 10 dip, cellPaddingH, 10 dip)
                 .<<.marginBottom(marginBottom).>>
               if (student.isBoss) tv.textColor = bossColor
             }
