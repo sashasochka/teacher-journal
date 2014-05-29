@@ -27,7 +27,7 @@ object TableFragment {
   }
 
   def marginHorizontal(implicit ctx: Context) = 1 dip
-  def marginBottom(implicit ctx: Context) = 1 dip
+  def marginVertical(implicit ctx: Context) = 1 dip
   def cellPaddingH(implicit ctx: Context) = 20 dip
 
   def cellBgColor(record: Option[Record]) = record match {
@@ -71,11 +71,11 @@ class TableFragment extends Fragment with RichFragment {
       val hl = headerLayout
       <<(new hl.LayoutParams(_)).fill
       .marginRight(marginHorizontal)
-      .marginBottom(marginBottom)
+      .marginBottom(marginVertical)
       .>>
       override def onMeasure(w: Int, h: Int) = {
         super.onMeasure(w, h)
-        setColumnWidth(index, getMeasuredWidth)
+        setColumnWidth(index, measuredWidth)
       }
     }
   }
@@ -91,7 +91,7 @@ class TableFragment extends Fragment with RichFragment {
   def unselectCell() = {
     selectedCellOption match {
       case Some((cell, record)) =>
-        cell.backgroundColor(cellBgColor(Some(record)))
+        cell.backgroundColor  = cellBgColor(Some(record))
         selectedCellOption = None
       case None =>
     }
@@ -115,12 +115,11 @@ class TableFragment extends Fragment with RichFragment {
       .padding(cellPaddingH, 10 dip, cellPaddingH, 10 dip)
       .<<(new row.LayoutParams(_))
       .marginRight(marginHorizontal)
-      .marginBottom(marginBottom)
+      .marginBottom(marginVertical)
       .>>
 
     def endGradeEditing() = {
       gradeEditOption match {
-        case None =>
         case Some((gradeEdit, gradeCoord)) =>
           val editStr = gradeEdit.text.toString
           val row = rowLayouts(gradeCoord.y)
@@ -129,6 +128,7 @@ class TableFragment extends Fragment with RichFragment {
           inputMethodManager.hideSoftInputFromWindow(gradeEdit.windowToken, 0)
           row.addView(createCell(Some(newRecord), gradeCoord), gradeCoord.x)
           row.removeView(gradeEdit)
+        case None =>
       }
       gradeEditOption = None
     }
@@ -162,7 +162,7 @@ class TableFragment extends Fragment with RichFragment {
                 .inputType(TYPE_CLASS_NUMBER | TYPE_NUMBER_FLAG_DECIMAL | TYPE_NUMBER_FLAG_SIGNED)
                 .<<(new row.LayoutParams(_))
                 .marginRight(marginHorizontal)
-                .marginBottom(marginBottom)
+                .marginBottom(marginVertical)
                 .>>
 
               gradeEditOption = Some((gradeEdit, coord))
@@ -231,7 +231,8 @@ class TableFragment extends Fragment with RichFragment {
       cell
         .<<(width, ViewGroup.LayoutParams.WRAP_CONTENT)(new layout.LayoutParams(_))
         .marginRight(marginHorizontal)
-        .marginBottom(marginBottom)
+        .marginBottom(marginVertical)
+        .>>
     }
   }
 
@@ -241,15 +242,13 @@ class TableFragment extends Fragment with RichFragment {
     val sheet = arg[Sheet]("sheet")
 
     new SVerticalLayout {
-      <<.fill
+      <<.fill.>>
       backgroundColor = bgColor
 
       this += new SLinearLayout {
         groupSpinner = SSpinner()
           .backgroundResource(R.drawable.group_spinner_bg)
-          .<<
-          .marginBottom(marginBottom)
-          .>>
+          .<<.marginBottom(marginVertical).>>
           .adapter(
             SArrayAdapter(selectedCourse.sheets.map(_.name).toArray)
               .dropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
@@ -267,9 +266,10 @@ class TableFragment extends Fragment with RichFragment {
             }
           })
 
-        headersScrollView = new SHorizontalScrollViewSynchronized(cellsHScrollView, disableScrollBar = true) {
+        this += new SHorizontalScrollViewSynchronized(cellsHScrollView, disableScrollBar = true) {
+          headersScrollView = this
           <<.marginLeft(marginHorizontal).>>
-          new SLinearLayout {
+          this += new SLinearLayout {
             headerLayout = this
             // Headers (e.g. dates)
             for ((column, colIndex) <- sheet.columns.zipWithIndex) {
@@ -277,16 +277,16 @@ class TableFragment extends Fragment with RichFragment {
             }
 
             // new column adder button
-            addColBtn = new SImageButton(R.drawable.add_new_col) {
+            this += new SImageButton(R.drawable.add_new_col) {
+              addColBtn = this
               padding(cellPaddingH, 2 dip, cellPaddingH, 2 dip)
               backgroundColor = headerColor
-              <<
-                .marginRight(marginHorizontal)
-                .marginBottom(marginBottom)
+              <<.marginRight(marginHorizontal)
+                .marginBottom(marginVertical)
                 .>>
               override def onMeasure(w: Int, h: Int) = {
                 super.onMeasure(w, h)
-                setColumnWidth(rowLayouts.head.getChildCount - 1, measuredWidth)
+                setColumnWidth(rowLayouts.head.childCount - 1, measuredWidth)
               }
 
               onClick {
@@ -307,16 +307,15 @@ class TableFragment extends Fragment with RichFragment {
                 cellsHScrollView.post(cellsHScrollView.fullScroll(View.FOCUS_RIGHT))
               }
             }
-            this += addColBtn
           }
-          this += headerLayout
         }
-        this += headersScrollView
       }
 
       this += new SLinearLayout {
         var cellsScrollView: SScrollView = _
-        val namesScrollView = new SScrollViewSynchronized(cellsScrollView, disableScrollBar = true) {
+        var namesScrollView: SScrollViewSynchronized = _
+        this += new SScrollViewSynchronized(cellsScrollView, disableScrollBar = true) {
+          namesScrollView = this
            this += new SVerticalLayout {
             <<.wrap.>>
 
@@ -333,15 +332,17 @@ class TableFragment extends Fragment with RichFragment {
                 .textSize(18 dip)
                 .maxLines(1)
                 .padding(cellPaddingH, 10 dip, cellPaddingH, 10 dip)
-                .<<.marginBottom(marginBottom).>>
+                .<<.marginBottom(marginVertical).>>
               if (student.isBoss) tv.textColor = bossColor
             }
           }
         }
 
-        cellsScrollView = new SScrollViewSynchronized(namesScrollView) {
+        this += new SScrollViewSynchronized(namesScrollView) {
+          cellsScrollView = this
           <<.marginLeft(marginHorizontal).>>
-          cellsHScrollView = new SHorizontalScrollViewSynchronized(headersScrollView) {
+          this += new SHorizontalScrollViewSynchronized(headersScrollView) {
+            cellsHScrollView = this
             this += new STableLayout {
               // Student marks (main table)
               for ((student, studentIndex) <- sheet.students.zipWithIndex) {
@@ -349,17 +350,14 @@ class TableFragment extends Fragment with RichFragment {
                   rowLayouts += this
 
                   for (recordOption <- student.records.map(Some(_)) :+ None) {
-                    this += createCell(recordOption, Coord(getChildCount, studentIndex))
+                    this += createCell(recordOption, Coord(childCount, studentIndex))
                   }
                 }
                 this += rowView
               }
             }
           }
-          this += cellsHScrollView
         }
-        this += namesScrollView
-        this += cellsScrollView
       }
     }
   }
