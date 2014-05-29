@@ -48,7 +48,7 @@ object TableFragment {
 
 class TableFragment extends Fragment with RichFragment {
   import TableFragment._
-  import RandData._
+  import Data._
 
   var groupSpinner: SSpinner = _
   var cellsHScrollView, headersScrollView: SHorizontalScrollView = _

@@ -2,13 +2,13 @@ package ua.kpi.teacherjournal
 
 import android.app.ActionBar._
 import android.content.Intent
-import android.view.{MenuItem, View, Menu}
+import android.view.{Menu, MenuItem}
 import android.widget.ShareActionProvider
 import org.scaloid.common._
 import scala.language.postfixOps
 
 class MainActivity extends SActivity { self =>
-  import RandData._
+  import Data._
 
   override def onCreateOptionsMenu(menu: Menu) = {
     // setup menu
@@ -40,11 +40,17 @@ class MainActivity extends SActivity { self =>
     actionBar.setSelectedNavigationItem(courseId)
   }
 
-  // `item` is not used but required argument
+  /**
+   * @param item Not used but required argument
+   */
   def startCallOver(item: MenuItem = null) = {
-    CallOverDialogFragment.show(getFragmentManager, RandData.selectedSheet.students.map(_.name))
+    CallOverDialogFragment.show(getFragmentManager, selectedSheet.students.map(_.name))
   }
 
+  /**
+   * Exit activity
+   * @param item Not used but required argument
+   */
   def exit(item: MenuItem = null) = {
     finish()
   }

@@ -6,8 +6,8 @@ import android.graphics.Color._
 import android.os.Bundle
 import android.text.format.DateUtils
 import android.view._
+import Data.timeUntilClassEnd
 import org.scaloid.common._
-import RandData._
 import scala.language.postfixOps
 import ua.kpi.teacherjournal.Journal.HourMinute
 
