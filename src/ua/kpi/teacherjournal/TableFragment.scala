@@ -309,6 +309,7 @@ class TableFragment extends Fragment with RichFragment {
       }
 
       this += new SLinearLayout {
+        <<.wrap.>>
         var cellsScrollView: SScrollView = _
         var namesScrollView: SScrollViewSynchronized = _
         this += new SScrollViewSynchronized(cellsScrollView, disableScrollBar = true) {
