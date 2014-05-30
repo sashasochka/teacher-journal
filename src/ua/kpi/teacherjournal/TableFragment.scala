@@ -154,11 +154,8 @@ class TableFragment extends Fragment with RichFragment {
                 .filters(Array[InputFilter](new InputFilter.LengthFilter(5)))
                 .backgroundColor(cellColor)
                 .textColor(BLACK)
-                .gravity(Gravity.CENTER_HORIZONTAL)
-                // fixme results in the following bug:
-                // when there are many columns and horizontal scroll view is used
-                // Android automatically full-scrolls to the right after focusing
-                // on this TextEdit
+                .gravity(Gravity.CENTER_VERTICAL)
+                .singleLine(true)
                 .inputType(TYPE_CLASS_NUMBER | TYPE_NUMBER_FLAG_DECIMAL | TYPE_NUMBER_FLAG_SIGNED)
                 .<<(new row.LayoutParams(_))
                 .marginRight(marginHorizontal)
