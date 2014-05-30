@@ -35,8 +35,8 @@ object RandData {
     Random.shuffle(set).take(Random.nextInt(set.size - 2) + 1)
 
   def randomSheets = {
-    val nRows = Random.nextInt(10) + 10
-    val nCols = Random.nextInt(15) + 7
+    def nRows = Random.nextInt(10) + 10
+    def nCols = Random.nextInt(15) + 7
     val LabRegex = raw"Lab (\d)".r
     val DateRegex = raw"(\d\d)\.(\d\d)".r
     (for (groupName <- randomSubset(groupNames)) yield {
