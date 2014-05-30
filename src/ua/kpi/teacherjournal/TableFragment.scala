@@ -35,11 +35,14 @@ object TableFragment {
     case _ => cellColor
   }
 
-  def update(fragmentManager: FragmentManager, selectedSheet: Sheet) =
+  def update(fragmentManager: FragmentManager, selectedSheet: Sheet) = {
+    val tableFragment = TableFragment(selectedSheet)
     fragmentManager.beginTransaction()
       .setCustomAnimations(android.R.animator.fade_in, android.R.animator.fade_out)
-      .replace(R.id.table_fragment, TableFragment(selectedSheet))
+      .replace(R.id.table_fragment, tableFragment)
       .commit()
+    tableFragment
+  }
 
   def apply(sheet: Sheet) = {
     (new TableFragment).setArguments("sheet" -> sheet)
@@ -56,8 +59,10 @@ class TableFragment extends Fragment with RichFragment {
   val rowLayouts = ArrayBuffer[STableRow]()
   val cellViews = ArrayBuffer[ArrayBuffer[STextView]]()
   var addColBtn: SImageButton = _
-  var selectedCellOption: Option[(TextView, Record)] = None
-  var gradeEditOption: Option[(SEditText, Coord)] = None
+
+  var selectedCellCoord: Option[Coord] = None
+
+  var gradeEditCoord: Option[Coord] = None
 
   def createHeader(index: Int, text: String) = {
     new STextView(text) {
@@ -80,21 +85,27 @@ class TableFragment extends Fragment with RichFragment {
     }
   }
 
-  def selectCell(cell: TextView, record: Record) = {
+  def selectCell(coord: Coord) = {
     val d = new GradientDrawable()
     d.setStroke(2 dip, rgb(0x4d, 0x93, 0xc3))
-    d.setColor(cellBgColor(Some(record)))
-    cell.backgroundDrawable = d
-    selectedCellOption = Some((cell, record))
+    d.setColor(cellBgColor(Some(selectedSheet.students(coord.y).records(coord.x))))
+    rowLayouts(coord.y).getChildAt(coord.x).backgroundDrawable = d
+    selectedCellCoord = Some(coord)
   }
 
   def unselectCell() = {
-    selectedCellOption match {
-      case Some((cell, record)) =>
-        cell.backgroundColor  = cellBgColor(Some(record))
-        selectedCellOption = None
+    selectedCellCoord match {
+      case Some(Coord(x, y)) =>
+        rowLayouts(y).getChildAt(x).backgroundColor  = cellBgColor(Some(selectedSheet.students(y).records(x)))
+        selectedCellCoord = None
       case None =>
     }
+  }
+
+  def updateCellRecord(cellCoord: Coord, record: Record) = {
+    selectedSheet.students(cellCoord.y).records(cellCoord.x) = record
+    rowLayouts(cellCoord.y).removeViewAt(cellCoord.x)
+    rowLayouts(cellCoord.y).addView(createCell(Some(record), cellCoord), cellCoord.x)
   }
 
   def createCell(recordOption: Option[Record], coord: Coord): STextView = {
@@ -119,18 +130,16 @@ class TableFragment extends Fragment with RichFragment {
       .>>
 
     def endGradeEditing() = {
-      gradeEditOption match {
-        case Some((gradeEdit, gradeCoord)) =>
-          val editStr = gradeEdit.text.toString
-          val row = rowLayouts(gradeCoord.y)
-          val newRecord = if (editStr.isEmpty) EmptyRecord else GradeRecord(editStr.toDouble)
-          selectedSheet.students(gradeCoord.y).records(gradeCoord.x) = newRecord
+      gradeEditCoord match {
+        case Some(gradeCoord) =>
+          val gradeEdit = rowLayouts(gradeCoord.y).getChildAt(gradeCoord.x).asInstanceOf[SEditText]
           inputMethodManager.hideSoftInputFromWindow(gradeEdit.windowToken, 0)
-          row.addView(createCell(Some(newRecord), gradeCoord), gradeCoord.x)
-          row.removeView(gradeEdit)
+          val editStr = gradeEdit.text.toString
+          val newRecord = if (editStr.isEmpty) EmptyRecord else GradeRecord(editStr.toDouble)
+          updateCellRecord(gradeCoord, newRecord)
         case None =>
       }
-      gradeEditOption = None
+      gradeEditCoord = None
     }
 
     def showPopup(record: Record) {
@@ -145,7 +154,7 @@ class TableFragment extends Fragment with RichFragment {
 
       popup.setOnMenuItemClickListener(new PopupMenu.OnMenuItemClickListener {
         def onMenuItemClick(item: MenuItem) = {
-          val newView = item match {
+          item match {
             case `gradeItem` =>
               val gradeEdit = new SEditText(cellText)
                 .padding(cellPaddingH, 10 dip, cellPaddingH, 10 dip)
@@ -162,7 +171,7 @@ class TableFragment extends Fragment with RichFragment {
                 .marginBottom(marginVertical)
                 .>>
 
-              gradeEditOption = Some((gradeEdit, coord))
+              gradeEditCoord = Some(coord)
 
               gradeEdit.onFocusChange((v: View, hasFocus: Boolean) => {
                 if (hasFocus) {
@@ -178,21 +187,16 @@ class TableFragment extends Fragment with RichFragment {
                 } else false
               })
 
-              selectCell(gradeEdit, EmptyRecord)
+              selectedSheet.students(coord.y).records(coord.x) = EmptyRecord
+              row.post(selectCell(coord))
               gradeEdit.post(gradeEdit.requestFocus())
-              gradeEdit
-            case `absentItem` =>
-              selectedSheet.students(coord.y).records(coord.x) = AbsentRecord
-              createCell(Some(AbsentRecord), coord)
-            case `presentItem` =>
-              selectedSheet.students(coord.y).records(coord.x) = EmptyRecord
-              createCell(Some(EmptyRecord), coord)
-            case `clearItem` =>
-              selectedSheet.students(coord.y).records(coord.x) = EmptyRecord
-              createCell(Some(EmptyRecord), coord)
+
+              row.addView(gradeEdit, coord.x)
+              row.removeView(cell)
+            case `absentItem` => updateCellRecord(coord, AbsentRecord)
+            case `presentItem` => updateCellRecord(coord, EmptyRecord)
+            case `clearItem` => updateCellRecord(coord, EmptyRecord)
           }
-          row.addView(newView, coord.x)
-          row.removeView(cell)
           true
         }
       })
@@ -203,7 +207,7 @@ class TableFragment extends Fragment with RichFragment {
       endGradeEditing()
       unselectCell()
       recordOption match {
-        case Some(record) => selectCell(cell, record)
+        case Some(record) => selectCell(coord)
         case None =>
       }
     }
@@ -213,7 +217,7 @@ class TableFragment extends Fragment with RichFragment {
       unselectCell()
       recordOption match {
         case Some(record) =>
-          selectCell(cell, record)
+          selectCell(coord)
           showPopup(record)
         case None =>
       }

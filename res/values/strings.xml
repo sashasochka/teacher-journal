@@ -8,6 +8,10 @@
     <string name="action_settings">Налаштування</string>
     <string name="action_exit">Вихід</string>
 
+    <!-- Callover dialog -->
+    <string name="callover_for">Перекличка за</string>
+    <string name="choose_column_first">Спочатку оберіть стовпець (клітинку в ньому)!</string>
+
     <!-- Different -->
     <string name="last_sync">Остання синхронізація</string>
     <string name="until_class_end">До кінця пари залишилося</string>

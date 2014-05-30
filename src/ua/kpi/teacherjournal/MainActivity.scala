@@ -6,9 +6,13 @@ import android.view.{Menu, MenuItem}
 import android.widget.ShareActionProvider
 import org.scaloid.common._
 import scala.language.postfixOps
+import Journal.{AbsentRecord, EmptyRecord}
+import TableFragment.Coord
 
 class MainActivity extends SActivity { self =>
   import Data._
+
+  var tableFragment: TableFragment = _
 
   override def onCreateOptionsMenu(menu: Menu) = {
     // setup menu
@@ -29,7 +33,7 @@ class MainActivity extends SActivity { self =>
         if (courseId != position) {
           courseId = position
           sheetId = 0
-          TableFragment.update(getFragmentManager, selectedSheet)
+          tableFragment = TableFragment.update(getFragmentManager, selectedSheet)
         }
         true
       }
@@ -44,7 +48,19 @@ class MainActivity extends SActivity { self =>
    * @param item Not used but required argument
    */
   def startCallOver(item: MenuItem = null) = {
-    CallOverDialogFragment.show(getFragmentManager, selectedSheet.students.map(_.name))
+    tableFragment.selectedCellCoord match {
+      case Some(Coord(x, _)) =>
+        CallOverDialogFragment.show(getFragmentManager, selectedSheet.columns(x),
+          selectedSheet.students.map(_.name)) onFinish { answers =>
+          for ((answer, rowIndex) <- answers.zipWithIndex) {
+            val oldRecord = selectedSheet.students(rowIndex).records(x)
+            val newRecord = if (answer) EmptyRecord else AbsentRecord
+            if (oldRecord != newRecord && (oldRecord == AbsentRecord || !answer))
+              tableFragment.updateCellRecord(Coord(x = x, y = rowIndex), newRecord)
+          }
+        }
+      case None => toast(R.string.choose_column_first)
+    }
   }
 
   /**
@@ -58,7 +74,7 @@ class MainActivity extends SActivity { self =>
   onCreate {
     setupActionBar()
     setContentView(R.layout.main_activity)
-    TableFragment.update(getFragmentManager, selectedSheet)
+    tableFragment = TableFragment.update(getFragmentManager, selectedSheet)
     BottomBar.setup(getFragmentManager)
   }
 }

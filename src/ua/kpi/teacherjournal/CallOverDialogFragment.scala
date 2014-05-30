@@ -10,19 +10,27 @@ import scala.language.postfixOps
 import android.graphics.drawable.ColorDrawable
 
 object CallOverDialogFragment {
-  def show(fragmentManager: FragmentManager, names: Seq[String], answers: Seq[Boolean] = Nil) = {
+  def show(fragmentManager: FragmentManager, title: String, names: Seq[String], answers: Seq[Boolean] = Nil) = {
     val dialog = new CallOverDialogFragment
     dialog.setArguments(
+      "title" -> title,
       "names" -> names.toVector,
       "answers" -> answers.toVector
     )
     dialog.show(fragmentManager, "call-over dialog")
+    dialog
   }
 }
 
 class CallOverDialogFragment extends DialogFragment with RichFragment {
+  lazy val title = arg[String]("title")
   lazy val names = arg[Vector[String]]("names")
   lazy val answers = arg[Vector[Boolean]]("answers")
+
+  private var onFinishCallback: Seq[Boolean] => Unit = (_) => ()
+
+  def onFinish(callback: Seq[Boolean] => Unit) =
+    onFinishCallback = callback
 
   override def onCreateView(inflater: LayoutInflater, container: ViewGroup, savedInstanceState: Bundle) = {
     assert(ctx != null)
@@ -53,7 +61,7 @@ class CallOverDialogFragment extends DialogFragment with RichFragment {
             .<<(60 dip, 60 dip)
             .alignParentRight
             .>>
-          val titleView = STextView("Перекличка за 1.03")
+          val titleView = STextView(s"${R.string.callover_for} $title")
             .textColor(WHITE)
             .textSize(26 dip)
             .gravity(CENTER_HORIZONTAL)
@@ -108,14 +116,16 @@ class CallOverDialogFragment extends DialogFragment with RichFragment {
   def showPrev() = {
     dismiss()
     if (answers.nonEmpty) {
-      CallOverDialogFragment.show(getFragmentManager, names, answers.init)
+      CallOverDialogFragment.show(getFragmentManager, title, names, answers.init) onFinish onFinishCallback
     }
   }
 
   def showNext(currentStudentIsPresent: Boolean) = {
     dismiss()
     if (answers.size != names.size - 1) {
-      CallOverDialogFragment.show(getFragmentManager, names, answers :+ currentStudentIsPresent)
+      CallOverDialogFragment.show(getFragmentManager, title,  names, answers :+ currentStudentIsPresent) onFinish onFinishCallback
+    } else {
+      onFinishCallback(answers)
     }
   }
 }

@@ -13,10 +13,14 @@ import ua.kpi.teacherjournal.Journal.HourMinute
 
 object BottomBar {
   def setup(fragmentManager: FragmentManager) = {
+    val bottomBar = BottomBar()
     fragmentManager.beginTransaction()
-      .replace(R.id.bottom_bar, new BottomBar)
+      .replace(R.id.bottom_bar, bottomBar)
       .commit()
+    bottomBar
   }
+
+  def apply() = new BottomBar
 }
 
 class BottomBar extends Fragment with RichFragment {
