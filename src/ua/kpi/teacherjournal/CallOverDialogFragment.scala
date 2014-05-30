@@ -65,8 +65,7 @@ class CallOverDialogFragment extends DialogFragment with RichFragment {
             .textColor(WHITE)
             .textSize(26 dip)
             .gravity(CENTER_HORIZONTAL)
-            .<<
-            .wrap
+            .<<.wrap
             .leftOf(closeBtn)
             .rightOf(backBtn)
             .centerVertical
