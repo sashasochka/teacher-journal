@@ -2,8 +2,8 @@ package ua.kpi.teacherjournal
 
 import android.app.Fragment
 import android.os.Bundle
-import org.scaloid.common._
 import android.view.Surface
+import org.scaloid.common._
 
 trait RichFragment { self: Fragment =>
   implicit def ctx = getActivity

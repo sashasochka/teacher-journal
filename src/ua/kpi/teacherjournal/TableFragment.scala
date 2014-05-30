@@ -5,14 +5,14 @@ import android.content.Context
 import android.graphics.drawable.GradientDrawable
 import android.graphics.Color._
 import android.os.Bundle
+import android.text.InputFilter
 import android.text.InputType._
 import android.view._
 import android.widget.{TextView, PopupMenu, AdapterView}
 import org.scaloid.common._
 import scala.collection.mutable.ArrayBuffer
 import scala.language.postfixOps
-import ua.kpi.teacherjournal.Journal._
-import android.text.InputFilter
+import Journal._
 
 object TableFragment {
   val headerColor = rgb(0xe7, 0xe7, 0xe7)

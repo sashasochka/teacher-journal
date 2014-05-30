@@ -1,10 +1,10 @@
 package ua.kpi.teacherjournal
 
+import scala.collection.mutable.ArrayBuffer
 import scala.collection.TraversableLike
 import scala.collection.generic.CanBuildFrom
 import scala.language.higherKinds
 import scala.util.Random
-import scala.collection.mutable.ArrayBuffer
 
 object RandData {
   import Journal._
