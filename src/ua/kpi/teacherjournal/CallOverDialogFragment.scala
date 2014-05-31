@@ -61,7 +61,7 @@ class CallOverDialogFragment extends DialogFragment with RichFragment {
             .<<(60 dip, 60 dip)
             .alignParentRight
             .>>
-          val titleView = STextView(s"${R.string.callover_for} $title")
+          val titleView = STextView(s"${R.string.callover_for.r2String} $title")
             .textColor(WHITE)
             .textSize(26 dip)
             .gravity(CENTER_HORIZONTAL)
