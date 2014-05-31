@@ -2,10 +2,13 @@ package ua.kpi.teacherjournal
 
 import android.app.ActionBar._
 import android.content.Intent
-import android.graphics.Color._
+import android.net.Uri
+import android.os.Environment
 import android.view.{Menu, MenuItem}
-import android.widget.ShareActionProvider
+import au.com.bytecode.opencsv._
 import org.scaloid.common._
+import java.io.{FileWriter, File}
+import resource._
 import scala.language.postfixOps
 import Journal.{AbsentRecord, EmptyRecord}
 import TableFragment.Coord
@@ -16,13 +19,7 @@ class MainActivity extends SActivity { self =>
   var tableFragment: TableFragment = _
 
   override def onCreateOptionsMenu(menu: Menu) = {
-    // setup menu
     getMenuInflater.inflate(R.menu.main_activity_actions, menu)
-
-    // setup share button
-    val shareProvider = menu.findItem(R.id.action_share).getActionProvider.asInstanceOf[ShareActionProvider]
-    shareProvider.setShareIntent(new Intent(Intent.ACTION_SEND).setType("text/*"))
-
     super.onCreateOptionsMenu(menu)
   }
 
@@ -43,6 +40,33 @@ class MainActivity extends SActivity { self =>
     actionBar.setListNavigationCallbacks(adapter, mNavListener)
     actionBar.setDisplayShowTitleEnabled(false)
     actionBar.setSelectedNavigationItem(courseId)
+  }
+
+  /**
+   * Share table data as csv file using email application
+   * @param item Not used but required argument
+   */
+  def shareData(item: MenuItem = null) = {
+    val filename = "share_data.csv"
+    val csvFile = new File(s"${Environment.getExternalStorageDirectory}${File.separator}$filename")
+    csvFile.createNewFile()
+    for (fileWriter <- managed(new FileWriter(csvFile))) {
+      for (writer <- managed(new CSVWriter(fileWriter))) {
+        writer.writeNext((selectedSheet.name +: selectedSheet.columns).toArray)
+        for (student <- selectedSheet.students) {
+          writer.writeNext((student.name +: student.records.map(_.csvRepr)).toArray)
+        }
+      }
+    }
+    if (!csvFile.exists || !csvFile.canRead) {
+      toast("Attachment Error")
+    } else {
+      val receiver = accountManager.getAccountsByType("com.google").headOption.map(_.name).orNull
+      val intent = new Intent(Intent.ACTION_SENDTO, Uri.fromParts("mailto", receiver, null))
+        .putExtra(Intent.EXTRA_SUBJECT, s"Sheet: ${selectedSheet.name}")
+        .putExtra(Intent.EXTRA_STREAM, Uri.fromFile(csvFile))
+      startActivity(Intent.createChooser(intent, "Send email..."))
+    }
   }
 
   /**

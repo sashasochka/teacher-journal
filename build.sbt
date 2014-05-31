@@ -10,11 +10,20 @@ proguardCache in Android ++= Seq(
   ProguardCache("org.scaloid") % "org.scaloid"
 )
 
-proguardOptions in Android ++= Seq("-dontobfuscate", "-dontoptimize")
+proguardOptions in Android ++= Seq(
+  "-dontobfuscate",
+  "-dontoptimize",
+  "-dontwarn java.beans.*",
+  "-dontwarn javax.transaction.*"
+)
 
 incOptions := incOptions.value.withNameHashing(true)
 
-libraryDependencies += "org.scaloid" %% "scaloid" % "3.4-10"
+libraryDependencies ++= Seq(
+  "org.scaloid" %% "scaloid" % "3.4-10",
+  "com.jsuereth" %% "scala-arm" % "1.4",
+  "net.sf.opencsv" % "opencsv" % "2.3"
+)
 
 scalacOptions in Compile ++= Seq(
   "-deprecation",

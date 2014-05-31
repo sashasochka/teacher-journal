@@ -1,15 +1,25 @@
 package ua.kpi.teacherjournal
 
+import android.content.Context
+import org.scaloid.common._
 import scala.collection.mutable
 
 object Journal {
   type Column = String
   type Grade = Double
 
-  sealed abstract class Record
-  case class GradeRecord(grade: Grade) extends Record
-  case object AbsentRecord extends Record
-  case object EmptyRecord extends Record
+  sealed abstract class Record {
+    def csvRepr(implicit ctx: Context): String
+  }
+  case class GradeRecord(grade: Grade) extends Record {
+    override def csvRepr(implicit ctx: Context) = grade.toString
+  }
+  case object AbsentRecord extends Record {
+    override def csvRepr(implicit ctx: Context) = R.string.absent_csv.r2String
+  }
+  case object EmptyRecord extends Record {
+    override def csvRepr(implicit ctx: Context) = ""
+  }
 
   case class Student(name: String, records: mutable.ArrayBuffer[Record], isBoss: Boolean = false)
 

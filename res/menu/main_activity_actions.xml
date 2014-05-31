@@ -5,7 +5,8 @@
         android:showAsAction="ifRoom" />
     <item android:id="@+id/action_share"
         android:title="@string/action_share"
-        android:actionProviderClass="android.widget.ShareActionProvider"
+        android:onClick="shareData"
+        android:icon="@android:drawable/ic_menu_share"
         android:showAsAction="ifRoom" />
     <item android:title="@string/action_settings"
         android:showAsAction="never" />

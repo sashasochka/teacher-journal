@@ -21,4 +21,7 @@
     <string name="absent">Відсутній</string>
     <string name="clear_cell">Очистити</string>
     <string name="present">Присутній</string>
+
+    <!-- Different -->
+    <string name="absent_csv">н</string>
 </resources>
