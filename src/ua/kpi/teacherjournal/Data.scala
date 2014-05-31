@@ -13,7 +13,7 @@ object Data {
   def selectedCourse = courses(courseId)
   def selectedSheet = selectedCourse.sheets(sheetId)
 
-  val classTimes = List(
+  private val classTimes = List(
     TimePeriod(HourMinute(8, 30), HourMinute(10, 5)),
     TimePeriod(HourMinute(10, 25), HourMinute(12, 0)),
     TimePeriod(HourMinute(12, 20), HourMinute(13, 55)),

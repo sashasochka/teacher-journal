@@ -16,7 +16,7 @@ import TableFragment.Coord
 class MainActivity extends SActivity { self =>
   import Data._
 
-  var tableFragment: TableFragment = _
+  private var tableFragment: TableFragment = _
 
   override def onCreateOptionsMenu(menu: Menu) = {
     getMenuInflater.inflate(R.menu.main_activity_actions, menu)

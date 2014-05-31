@@ -9,30 +9,34 @@ import scala.util.Random
 object RandData {
   import Journal._
 
-  val groupNames = Vector("ІС-21", "ІС-22", "ІС-23", "ІС-24", "ІП-21", "ІП-22")
-  val studentNames = Vector("Віктор", "Михайло", "Антон", "Дмитро", "Олексій", "Роман",
+  private val groupNames = Vector("ІС-21", "ІС-22", "ІС-23", "ІС-24", "ІП-21", "ІП-22")
+  private val studentNames = Vector("Віктор", "Михайло", "Антон", "Дмитро", "Олексій", "Роман",
     "Андрій", "Євгеній", "Микола", "Віталій", "Едуард", "Влад", "Юрій", "Денис",
     "Поліна", "Євгенія", "Ірина", "Олена", "Дарина", "Софія")
-  val studentSurnames = Vector("Батицький", "Шмалько", "Франчук", "Хусейн", "Денькін", "Палій", "Кіндзерський",
+  private val studentSurnames = Vector("Батицький", "Шмалько", "Франчук", "Хусейн", "Денькін", "Палій", "Кіндзерський",
     "Шкель", "Трощук", "Гулий", "Баранюк", "Квачук", "Лопачук", "Пащук", "Опанасенко",
     "Сочка", "Левицький", "Ленець", "Панійван", "Гук", "Місюра", "Головань", "Базелюк",
     "Калапуша", "Поляков", "Талашко", "Борисов")
   val courseNames = Vector("Об’єктно-орієнтоване програмування", "Основи програмування", "Математичний аналіз")
 
-  def randomRecord =
+  private def randomRecord =
     if (Random.nextBoolean()) GradeRecord(Random.nextInt(10).toDouble)
     else if (Random.nextBoolean()) AbsentRecord
     else EmptyRecord
 
-  def randomStudentName =
+  private def randomStudentName =
     studentSurnames(Random.nextInt(studentSurnames.size)) + " " + studentNames(Random.nextInt(studentNames.size))
 
-  def randomStudentSeq(nStudents: Int, nColumns: Int) =
+  private def randomStudentSeq(nStudents: Int, nColumns: Int) =
     Array.fill(nStudents)(Student(randomStudentName, ArrayBuffer.fill(nColumns)(randomRecord))).sortBy(_.name)
 
   private def randomSubset[A, CC[X] <: TraversableLike[X, CC[X]]](set: CC[A])
       (implicit bf: CanBuildFrom[CC[A], A, CC[A]]): CC[A] =
     Random.shuffle(set).take(Random.nextInt(set.size - 2) + 1)
+
+  private def randomColumnName =
+    if (Random.nextBoolean()) f"${Random.nextInt(30) + 1}%02d.${Random.nextInt(12) + 1}%02d"
+    else s"Lab ${Random.nextInt(10)}"
 
   def randomSheets = {
     def nRows = Random.nextInt(10) + 10
@@ -51,8 +55,4 @@ object RandData {
       Sheet(groupName, columns, students)
     }).sortBy(_.name)
   }
-
-  def randomColumnName =
-    if (Random.nextBoolean()) f"${Random.nextInt(30) + 1}%02d.${Random.nextInt(12) + 1}%02d"
-    else s"Lab ${Random.nextInt(10)}"
 }

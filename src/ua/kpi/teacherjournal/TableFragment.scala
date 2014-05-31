@@ -53,16 +53,15 @@ class TableFragment extends Fragment with RichFragment {
   import TableFragment._
   import Data._
 
-  var headerLayout: SLinearLayout = _
-  var groupSpinner: SSpinner = _
-  var addColBtn: SImageButton = _
-  var headersScrollView: SHorizontalScrollView = _
-  var namesScrollView: SScrollViewSynchronized = _
-  var cellsHScrollView: SHorizontalScrollView = _
-  var cellsScrollView: SScrollView = _
+  private var headerLayout: SLinearLayout = _
+  private var groupSpinner: SSpinner = _
+  private var addColBtn: SImageButton = _
+  private var headersScrollView: SHorizontalScrollView = _
+  private var namesScrollView: SScrollViewSynchronized = _
+  private var cellsHScrollView: SHorizontalScrollView = _
+  private var cellsScrollView: SScrollView = _
+  private val rowLayouts = ArrayBuffer[STableRow]()
 
-  val rowLayouts = ArrayBuffer[STableRow]()
-  val cellViews = ArrayBuffer[ArrayBuffer[STextView]]()
   var selectedCellCoord: Option[Coord] = None
   var gradeEditCoord: Option[Coord] = None
 
