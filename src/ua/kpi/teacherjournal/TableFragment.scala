@@ -1,14 +1,14 @@
 package ua.kpi.teacherjournal
 
 import android.app.{AlertDialog, Fragment, FragmentManager}
-import android.content.Context
+import android.content.{Context, DialogInterface}
 import android.graphics.drawable.GradientDrawable
 import android.graphics.Color._
 import android.os.Bundle
 import android.text.InputFilter
 import android.text.InputType._
 import android.view._
-import android.widget.{TextView, PopupMenu, AdapterView}
+import android.widget.{AdapterView, PopupMenu}
 import org.scaloid.common._
 import scala.collection.mutable.ArrayBuffer
 import scala.language.postfixOps
@@ -67,13 +67,13 @@ class TableFragment extends Fragment with RichFragment {
   var gradeEditCoord: Option[Coord] = None
 
   def addEmptyColumn() = {
-    new AlertDialog.Builder(new ContextThemeWrapper(ctx, android.R.style.Theme_Holo_Light_Dialog_NoActionBar)) {
-      setTitle("Введіть назву нового стовпця")
+    val editText = new SEditText()
+      .hint(R.string.new_column)
+      .textColor(BLACK)
+      .singleLine(true)
 
-      val editText = new SEditText("Нов. стовп.")
-        .textColor(BLACK)
-        .singleLine(true)
-      editText.selectAll()
+    val dialog = new AlertDialog.Builder(new ContextThemeWrapper(ctx, android.R.style.Theme_Holo_Light_Dialog_NoActionBar)) {
+      setTitle(R.string.enter_new_column_name)
       setView(editText)
 
       setPositiveButton(android.R.string.ok, {
@@ -97,6 +97,10 @@ class TableFragment extends Fragment with RichFragment {
 
       setNegativeButton(android.R.string.cancel, () => ())
     }.show()
+
+    editText.onTextChanged {
+      dialog.getButton(DialogInterface.BUTTON_POSITIVE).setEnabled(!editText.text.toString.isEmpty)
+    }
   }
 
   def createHeader(index: Int, text: String) = {

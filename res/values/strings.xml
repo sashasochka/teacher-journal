@@ -22,6 +22,10 @@
     <string name="clear_cell">Очистити</string>
     <string name="present">Присутній</string>
 
+    <!-- New column dialog -->
+    <string name="new_column">Новий стовпець</string>
+    <string name="enter_new_column_name">Введіть назву нового стовпця</string>
+
     <!-- Different -->
     <string name="absent_csv">н</string>
 </resources>
