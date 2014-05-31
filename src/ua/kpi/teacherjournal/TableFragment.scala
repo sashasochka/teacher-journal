@@ -8,6 +8,7 @@ import android.os.Bundle
 import android.text.InputFilter
 import android.text.InputType._
 import android.view._
+import android.view.inputmethod.EditorInfo
 import android.widget.{AdapterView, PopupMenu}
 import org.scaloid.common._
 import scala.collection.mutable.ArrayBuffer
@@ -97,9 +98,17 @@ class TableFragment extends Fragment with RichFragment {
       setNegativeButton(android.R.string.cancel, () => ())
     }.show()
 
+    val positiveBtn = dialog.getButton(DialogInterface.BUTTON_POSITIVE)
+    positiveBtn.disable
     editText.onTextChanged {
-      dialog.getButton(DialogInterface.BUTTON_POSITIVE).setEnabled(!editText.text.toString.isEmpty)
+      positiveBtn.enabled = !editText.text.toString.isEmpty
     }
+
+    editText.onEditorAction((_, actionId, _) => {
+      if (actionId == EditorInfo.IME_ACTION_DONE && positiveBtn.isEnabled)
+        positiveBtn.performClick()
+      else false
+    })
   }
 
   def createHeader(index: Int, text: String) = {
