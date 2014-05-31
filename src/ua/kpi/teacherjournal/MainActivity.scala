@@ -2,6 +2,7 @@ package ua.kpi.teacherjournal
 
 import android.app.ActionBar._
 import android.content.Intent
+import android.graphics.Color._
 import android.view.{Menu, MenuItem}
 import android.widget.ShareActionProvider
 import org.scaloid.common._

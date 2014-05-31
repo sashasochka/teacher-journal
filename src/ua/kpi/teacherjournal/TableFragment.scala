@@ -1,6 +1,6 @@
 package ua.kpi.teacherjournal
 
-import android.app.{Fragment, FragmentManager}
+import android.app.{AlertDialog, Fragment, FragmentManager}
 import android.content.Context
 import android.graphics.drawable.GradientDrawable
 import android.graphics.Color._
@@ -67,21 +67,36 @@ class TableFragment extends Fragment with RichFragment {
   var gradeEditCoord: Option[Coord] = None
 
   def addEmptyColumn() = {
-    // todo Add possibility to change column name (instead of hard-coded name)
-    val newColumnName = "New column"
-    selectedSheet.columns += newColumnName
-    for (student <- selectedSheet.students)
-      student.records += EmptyRecord
+    new AlertDialog.Builder(new ContextThemeWrapper(ctx, android.R.style.Theme_Holo_Light_Dialog_NoActionBar)) {
+      setTitle("Введіть назву нового стовпця")
 
-    val x = headerLayout.childCount - 1
-    headerLayout.addView(createHeader(x, newColumnName), x)
+      val editText = new SEditText("Нов. стовп.")
+        .textColor(BLACK)
+        .singleLine(true)
+      editText.selectAll()
+      setView(editText)
 
-    for ((layout, y) <- rowLayouts.zipWithIndex) {
-      layout.addView(createCell(Some(EmptyRecord), Coord(x, y)), x)
-    }
+      setPositiveButton(android.R.string.ok, {
+        val newColumnName = editText.text.toString
+        selectedSheet.columns += newColumnName
+        for (student <- selectedSheet.students) {
+          student.records += EmptyRecord
+        }
 
-    // post is used to schedule scrolling after Android adds column to its layout
-    cellsHScrollView.post(cellsHScrollView.fullScroll(View.FOCUS_RIGHT))
+        val x = headerLayout.childCount - 1
+        headerLayout.addView(createHeader(x, newColumnName), x)
+
+        for ((layout, y) <- rowLayouts.zipWithIndex) {
+          layout.addView(createCell(Some(EmptyRecord), Coord(x, y)), x)
+        }
+
+        // post is used to schedule scrolling after Android adds column to its layout
+        cellsHScrollView.post(cellsHScrollView.fullScroll(View.FOCUS_RIGHT))
+        ()
+      })
+
+      setNegativeButton(android.R.string.cancel, () => ())
+    }.show()
   }
 
   def createHeader(index: Int, text: String) = {
