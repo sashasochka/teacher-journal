@@ -5,7 +5,7 @@ import android.os.Bundle
 import android.view.Surface
 import org.scaloid.common._
 
-trait RichFragment { self: Fragment =>
+trait RichFragment extends TagUtil { self: Fragment =>
   implicit def ctx = getActivity
 
   def arg[T](argName: String) =
