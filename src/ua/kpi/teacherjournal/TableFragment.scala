@@ -71,6 +71,7 @@ class TableFragment extends Fragment with RichFragment {
       .hint(R.string.new_column)
       .textColor(BLACK)
       .singleLine(true)
+      .imeOptions(EditorInfo.IME_FLAG_NO_EXTRACT_UI)
 
     val dialog = new AlertDialog.Builder(new ContextThemeWrapper(ctx, android.R.style.Theme_Holo_Light_Dialog_NoActionBar)) {
       setTitle(R.string.enter_new_column_name)
@@ -179,6 +180,7 @@ class TableFragment extends Fragment with RichFragment {
                 .gravity(Gravity.CENTER_VERTICAL)
                 .singleLine(true)
                 .inputType(TYPE_CLASS_NUMBER | TYPE_NUMBER_FLAG_DECIMAL | TYPE_NUMBER_FLAG_SIGNED)
+                .imeOptions(EditorInfo.IME_FLAG_NO_EXTRACT_UI | EditorInfo.IME_ACTION_DONE)
                 .<<(new row.LayoutParams(_))
                 .marginRight(marginHorizontal)
                 .marginBottom(marginVertical)
@@ -186,15 +188,15 @@ class TableFragment extends Fragment with RichFragment {
 
               gradeEditCoord = Some(coord)
 
-              gradeEdit.onFocusChange((v: View, hasFocus: Boolean) => {
+              gradeEdit.onFocusChange((_: View, hasFocus: Boolean) => {
                 if (hasFocus) {
                   gradeEdit.post(inputMethodManager.showSoftInput(gradeEdit, 0))
                   gradeEdit.selectAll()
                 }
               })
 
-              gradeEdit.onKey((v: View, keyCode: Int, event: KeyEvent) => {
-                if ((event.getAction == KeyEvent.ACTION_DOWN) && (keyCode == KeyEvent.KEYCODE_ENTER)) {
+              gradeEdit.onEditorAction((_, actionId, _) => {
+                if (actionId == EditorInfo.IME_ACTION_DONE) {
                   endGradeEditing()
                   true
                 } else false
